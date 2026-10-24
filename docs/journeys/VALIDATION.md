@@ -122,3 +122,35 @@ and service lifecycle; terminal/replay counts are not task-success counts.
 
 A new API protocol or H4 consent-contract revision needs its own tests and new
 plans. Current implementation boundaries are recorded in [HANDOVER.md](HANDOVER.md).
+
+
+## Machine-readable output regression (handover-20261024-json)
+
+The experiment CLI reserves stdout for the requested JSON/CSV payload. Python
+prints, pre-bound stdout logging, worker threads, native descriptor writes and
+inherited Harbor subprocess output go to stderr. This routing is CLI-local and
+ends only after create has shut down its Harbor workers. Text mode is unchanged.
+Do not combine stdout/stderr when parsing; multi-format analysis belongs in
+separate `--output` files, not a single JSON stream.
+
+Targeted regression command (no provider API):
+
+```sh
+python -m pytest tests/unit/matraix/test_experiment_cli.py tests/unit/matraix/test_job_run.py tests/unit/matraix/test_job_results.py -q
+python -m ruff check src/matraix/experiment_cli.py tests/unit/matraix/test_experiment_cli.py scripts/validate_journey_harbor.py
+```
+
+The local Windows run passes 29 tests, including 14 experiment-CLI tests. Fresh
+Python child processes check entire stdout for create/list/show/analyze; CSV and
+file exports; successful create; arm failure; launch failure; interrupt cleanup;
+and restoration of stdout. Embedded StringIO output is covered separately.
+No line filtering, ANSI removal or trailing-object extraction is allowed.
+
+The enhanced `scripts/validate_journey_harbor.py` calls the real CLI as a child
+process, with the standard scheduler, actual Docker/Harbor jobs, native verifier
+and a scripted loopback model service. Both successful eight-arm create and
+injected-429 failure must emit parseable whole JSON stdout with logs on stderr.
+It also checks standard result reading and JSON/CSV/PDF exports, stop/no-retry,
+usage accounting, zero inflight requests and cleanup. Acceptance summaries, not
+persona/trial/receipt trees, are uploaded by CI. Check Actions for this exact head.
+This fix makes no paid API requests and does not rerun or rescore a formal study.

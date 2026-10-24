@@ -4,7 +4,7 @@
 
 ## 1. 安装与版本
 
-使用 Python 3.13、Git 和可运行 Linux 容器的 Docker Engine/Compose v2。先固定交接分支/标签，并保存 `git rev-parse HEAD`。源码准备和安装会联网下载软件，但不会调用模型。
+使用 Python 3.13、Git 和可运行 Linux 容器的 Docker Engine/Compose v2。本次修复交接标签为 `handover-20261024-json`，请执行 `git checkout handover-20261024-json`，并保存 `git rev-parse HEAD`。旧 `handover-20261024` 标签保留原样。源码准备和安装会联网下载软件，但不会调用模型。
 
 ```sh
 python3.13 -m venv .venv
@@ -15,7 +15,7 @@ export SIMUHOME_ROOT="$(pwd)/journey-runs/native/SimuHome"
 docker info
 ```
 
-Windows 可用 `py -3.13 -m venv .venv` 和 `.venv\Scripts\python.exe`，环境变量用 `$env:NAME = "value"`。原生 Docker 端到端验收以 Linux CI 为准，Docker Desktop/WSL 未据此宣称已验证。短路径能减少 Windows 路径问题。SimuHome 固定 revision 由 setup-native 核验，CAR-bench 固定源码随包提供。
+Windows 可用 `py -3.13 -m venv .venv` 和 `.venv\Scripts\python.exe`，环境变量用 `$env:NAME = "value"`。Linux CI 和本地 Windows Docker Desktop/WSL 的 J4 八臂验收范围见 `VALIDATION.md`；不保证任意硬件或云平台。建议在 Windows 使用短 checkout 路径，减少路径长度问题。SimuHome 固定 revision 由 setup-native 核验，CAR-bench 固定源码随包提供。
 
 官方启动器在 Linux 优先使用 checkout 的 `.venv/bin/harbor`；请保留上面的虚拟环境步骤。若装在其他位置，通过项目已有的 `MATRIX_HARBOR_BIN` 指向该环境的 Harbor 可执行文件，避免隐式切换到 `uv run` 的另一个环境。Windows 示例：`$env:MATRIX_HARBOR_BIN = (Resolve-Path .venv/Scripts/harbor.exe).Path`。只全局 pip 安装而未配置启动器，不是本文的已验收安装方式。
 
@@ -71,6 +71,16 @@ python -m matraix.cli experiment create experiments/tasks/journeys-car-j4 \
   --mode force_docker --concurrent 1 --no-parallel-arms
 ```
 
+需要供脚本读取时，在 create 命令最后添加 `--format json`：标准输出只有一个 JSON 对象，Harbor 进度、后台日志和费用查询提示保留在标准错误输出。不要把两个通道合并后解析 JSON。
+
+```sh
+# 在上面的完整 create 命令末尾添加：
+# --format json > experiment.json 2> experiment.log
+python -m json.tool experiment.json > /dev/null
+```
+
+Windows PowerShell 也可用 `--format json > experiment.json 2> experiment.log`；再用 `Get-Content -Raw experiment.json | ConvertFrom-Json` 检查。JSON 记录生成不意味着任务成功：仍须检查进程退出码、manifest 状态和 verifier。已运行但存在失败的实验保持非零退出码，能够生成的 manifest 仍以纯 JSON 输出；启动前失败可能没有 JSON，只在 stderr 报错。分析只需要 JSON 时用单一 `--format json`；多格式导出使用 `-o` 写入独立文件。
+
 由官方 ExperimentService 展开八臂、共享源名单，HarborJobService 在启动前绑定每臂私有任务/计划/compose，然后实际 Harbor 创建 job 和 trial。`--no-parallel-arms --concurrent 8` 的峰值是8个trial；开启并行臂时峰值为8×concurrent，请按机器资源选择，不能把每臂并发误作总并发。
 
 每例单次尝试，Harbor retry=0；SUT最多160请求、PUT最多64轮。所有臂共享该实验的请求账本和停止闸门。API/协议错误停止新增API派发，在途调用排空，保留错误与未知用量；排队的trial可能仍被Harbor创建，但不得继续发API。不要删除锁/账本或用同名job自动续跑。
@@ -100,7 +110,7 @@ python -m matraix.cli experiment analyze EXPERIMENT_ID --format json,csv,pdf -o 
 python scripts/validate_journey_harbor.py
 ```
 
-该脚本要求真实Docker，只创建新的DAG合成验收画像和本机脚本化API，不读key文件，不接付费服务，不读取历史实验。它通过实际官方调度器运行J4八臂，检查job/trial/verifier/多工具调用/用量账本，并执行标准JSON/CSV/PDF导出及容器清理。验收目录已存在会拒绝覆盖，不做resume。
+该脚本要求真实Docker，只创建新的DAG合成验收画像和本机脚本化API，不读key文件，不接付费服务，不读取历史实验。它在独立 CLI 子进程中通过实际官方调度器运行J4八臂，整段解析成功与注入失败两次 create 的 stdout（不剥离日志或截取末尾），检查job/trial/verifier/多工具调用/用量账本，并执行标准JSON/CSV/PDF导出及容器清理。验收目录已存在会拒绝覆盖，不做resume。
 
 十二类任务、H4协商/授权、温控可达性、上下文隔离、错误停止排空的测试见 `VALIDATION.md`。CI任务 `official-harbor-eight-arm-acceptance` 才是原生端到端证据；参考模式容器检查和schema通过都不能替代它。具体通过情况必须看当前提交的CI，不能引用旧提交成功。
 

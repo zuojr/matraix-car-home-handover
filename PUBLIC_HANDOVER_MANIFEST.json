@@ -8,10 +8,16 @@
   "formalStudyPersonasIncluded": false,
   "realCredentialFindings": 0,
   "modelCalls": 0,
-  "coreSourceByteChanges": 0,
   "allowedChangedSourceFiles": [
     ".github/workflows/journey-sidecars.yml",
-    "README.md"
+    "HANDOVER.md",
+    "README.md",
+    "docs/journeys/COLLABORATOR_QUICKSTART_CN.md",
+    "docs/journeys/PUBLIC_HANDOVER.md",
+    "docs/journeys/VALIDATION.md",
+    "scripts/validate_journey_harbor.py",
+    "src/matraix/experiment_cli.py",
+    "tests/unit/matraix/test_experiment_cli.py"
   ],
   "excludedSourceFiles": [
     {
@@ -1362,12 +1368,10 @@
     "docs/i18n/README.zh-CN.md": "21bd7784c3b72dbbb4e82146b697a434fdd47fce9f702c840a1a59b595fefb0f",
     "docs/i18n/README.zh-TW.md": "c74cdb201869361669db498a74150a582171936b1c558340477a60e5dce6ea31",
     "docs/intake/matraix-study-intake.html": "5a341ad7f0cc8db3367bf7acb612220809070f684708f059e6b28152f50993eb",
-    "docs/journeys/COLLABORATOR_QUICKSTART_CN.md": "9a4bf060bfaf6ace947c39ac4f6f75847ba5b1250222b737e6d6c5d30c64aae6",
     "docs/journeys/HANDOVER.md": "04a560b49a7ce9f43915107abd40da522d43f2fe73b47a34569a7dd6863c497f",
     "docs/journeys/QUICKSTART_CN.md": "89c835c526980160d285a0fdbb9ad9dd8893b01e96aafcf6484a9761cb25e0a4",
     "docs/journeys/RECOVERY_CN.md": "a49f4d0db89bc7281382a25684f30c0ab0c75f695845aa1fa40e53751ac6af9e",
     "docs/journeys/RESEARCH_FRAME_CN.md": "579c40f7f7b3383ac1e2e4d3a34e7d0b77b5942e638260be0b670e6f66ce358b",
-    "docs/journeys/VALIDATION.md": "2ac0f8d34073337db9af2b185fad09b4797c5b076ed147e7d95203a5c42713b5",
     "docs/packages.md": "74bbc27b484d5950558c2f476b86ba4349f8ed9fb39029ea5e5b8aa22ef0d3d2",
     "docs/persona/README.md": "f724e6bc0a3e1a3c4752bc2e0da169de554b548edf3b95b928099242c204cb80",
     "docs/persona/pipeline.md": "1fdd6cf4598affe78b53b4e60d7a6950ad69ba04b80fb17973675b2d42807a7b",
@@ -3448,12 +3452,10 @@
     "scripts/journey_recovery.py": "8db3586eb75451d1a5f3c96ac04f1c3ef851835d199ef0aecad1b0aab7895b22",
     "scripts/run_journeys.ps1": "e84ba472eb65b88ab6b208507adf0b3ff4800eb44891ab70536c31db732c761a",
     "scripts/sync_docker_snippets.py": "10a2bf2c0c64e6a262175474e968f11c88ae50304426e44c13b4e29c0b08e05e",
-    "scripts/validate_journey_harbor.py": "478247af46f80035ab708d374f9a2bc2da69927aa0bab9b7977944c718a57c16",
     "src/matraix/__init__.py": "1d315d7db0df8edbf52b223606823d718d25cb7dd1f98fe5b478f5682ecbcced",
     "src/matraix/application_job.py": "6756be07a7cd9aba4f8044349d0d75364728f727b5257a5d7937c0c6c10cab5c",
     "src/matraix/cli.py": "97b1d7c0772513af801e784b39659818df1c09bcbc4685495c177495c10a5de1",
     "src/matraix/compute_family.py": "2deab4cfbfb639e0013aef5259cf5f562019ab8f30683092ecbbede87a6682b8",
-    "src/matraix/experiment_cli.py": "431f6fe6b9e6d8886a2d60748f42a8d01ee3fd95097266735fc2ee5136e988a4",
     "src/matraix/gke_settings.py": "2e347cd0832fb2b6d3c966f7b1bd117aa7b940de05d8d0638581ecde8ca11634",
     "src/matraix/job_results.py": "6d70a194a7c2505eb0348f9c3061e4765b94b6cc830992fe070be3c2476dea79",
     "src/matraix/job_run.py": "c5d4129fa1b9eb5e045e6bcc85c4fdb56a780253c845c329d55ee8fa26b2a8bb",
@@ -3584,7 +3586,6 @@
     "tests/unit/harbor/test_trial_input_mounts.py": "743b25baf99775eb2a489b7280a86436ba9d11e43e13cb7ebc4880415e698d12",
     "tests/unit/harbor/test_use_computer_macos_paths.py": "ed1044c80efee10cbc41473442b05b4b551558dcbe10b388349b5ac9fcef87a2",
     "tests/unit/matraix/test_dimension_label_packs.py": "abbc9f604631572ed209afe9af2c5898c452a57b1abc585928517ec5fb60c455",
-    "tests/unit/matraix/test_experiment_cli.py": "3bd7d91395f54891037528580ec81d846ba3ed35b50487fe2834a330d02b349f",
     "tests/unit/matraix/test_job_results.py": "cf9fba993b63babbb6d39dc861627d02b5e1cf4965367778d1330bc78031e458",
     "tests/unit/matraix/test_job_run.py": "9b89faaaad46a6fc7c3dc8512f6c6d01a774afd75955d025b335040a52783d7a",
     "tests/unit/matraix/test_journeys_efficiency.py": "f3617b0b838115afdfe23bb1b1d737a0df147cd0d428d1b64132c2e2a8886807",
@@ -3650,5 +3651,30 @@
     "tests/unit/viewer/test_trial_file_size.py": "683d0ba9b798a1550ce1833aab4362cb644ed711b0b27febc2d7b7e4402d5bce",
     "tests/unit/viewer/test_upload_status.py": "95851c15118fe335662d66e7fb25b44ba500dd8781e899ddaddcafa880f9b0fe",
     "uv.lock": "7fd474774f74f2233abf592d89ac4bd22a87b5d08ae1812c1f89ad2f72fded11"
-  }
+  },
+  "publicationBaselineCoreSourceByteChanges": 0,
+  "postPublicationUpdates": [
+    {
+      "kind": "machine-readable-cli-output-separation",
+      "basePublicCommit": "e0e2a230528230302551c84a0d0f53501e2f35f7",
+      "handoverTag": "handover-20261024-json",
+      "taskOrScoringChanges": false,
+      "modelCalls": 0,
+      "corePatchFileSha256": {
+        "src/matraix/experiment_cli.py": "fbd6a99112d75cdf05705f633390e6a41402090a5c865aa020cb6ce01a157756",
+        "tests/unit/matraix/test_experiment_cli.py": "380cf51c81d464742b880fdf20c38627c3e8cdceb8874a55aa5321119717f230",
+        "scripts/validate_journey_harbor.py": "412559835e0f0f2e9d195fe605da0ab6378bf2860e2e4e5c6fe9f34badc18a6c"
+      },
+      "verification": "Scripted regression and real Harbor acceptance; see docs/journeys/VALIDATION.md and Actions for this commit."
+    }
+  ],
+  "modelCallsScope": "Repository publication and CLI output fix; external compatibility evidence is kept outside Git.",
+  "changedFilePublicationBaselineSha256": {
+    "docs/journeys/COLLABORATOR_QUICKSTART_CN.md": "9a4bf060bfaf6ace947c39ac4f6f75847ba5b1250222b737e6d6c5d30c64aae6",
+    "docs/journeys/VALIDATION.md": "2ac0f8d34073337db9af2b185fad09b4797c5b076ed147e7d95203a5c42713b5",
+    "scripts/validate_journey_harbor.py": "478247af46f80035ab708d374f9a2bc2da69927aa0bab9b7977944c718a57c16",
+    "src/matraix/experiment_cli.py": "431f6fe6b9e6d8886a2d60748f42a8d01ee3fd95097266735fc2ee5136e988a4",
+    "tests/unit/matraix/test_experiment_cli.py": "3bd7d91395f54891037528580ec81d846ba3ed35b50487fe2834a330d02b349f"
+  },
+  "baselineHashReconstruction": "unchangedSourceFileSha256 union changedFilePublicationBaselineSha256 preserves the initial 3146-entry baseline."
 }

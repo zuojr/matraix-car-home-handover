@@ -28,7 +28,7 @@ jobs:
         tests/unit/application/test_generate_application_job.py tests/unit/playground_core/test_application_job.py
         -q
 
-        python -m ruff check src/matraix/journeys scripts/journey_recovery.py scripts/check_journey_setup.py tests/unit/matraix/test_journeys_*.py
+        python -m ruff check src/matraix/journeys src/matraix/experiment_cli.py scripts/journey_recovery.py scripts/check_journey_setup.py scripts/validate_journey_harbor.py tests/unit/matraix/test_experiment_cli.py tests/unit/matraix/test_journeys_*.py
 
         python -m pytest tests/environment/test_application_task_contracts.py -k journeys -q
 
@@ -132,6 +132,7 @@ jobs:
     - src/matraix/journeys/**
     - src/matraix/application_job.py
     - src/matraix/experiment_cli.py
+    - tests/unit/matraix/test_experiment_cli.py
     - experiments/tasks/journeys-*/**
     - application/playground/backend/service/harbor_job_service.py
     - application/playground/backend/service/report_pdf.py
@@ -154,6 +155,7 @@ jobs:
     paths:
     - src/matraix/application_job.py
     - src/matraix/experiment_cli.py
+    - tests/unit/matraix/test_experiment_cli.py
     - experiments/tasks/journeys-*/**
     - application/playground/backend/service/harbor_job_service.py
     - application/playground/backend/service/report_pdf.py

@@ -9,12 +9,15 @@ match the UI's ``experimentExport.ts`` export byte-for-byte.
 from __future__ import annotations
 
 import argparse
+from contextlib import contextmanager, redirect_stdout
 import csv
+from functools import wraps
 import io
 import json
+import os
 import sys
 from pathlib import Path
-from typing import Any
+from typing import Any, TextIO
 
 from matraix.launch_env import find_repo_root, merge_pythonpath, required_pythonpath_entries
 
@@ -236,23 +239,99 @@ def _format_analysis_text(manifest: dict[str, Any], analysis: dict[str, Any]) ->
 # Command handlers
 # ---------------------------------------------------------------------------
 
-def _cmd_list(args: argparse.Namespace) -> None:
+@contextmanager
+def _diagnostics_on_stderr():
+    """Reserve stdout for a payload, including when workers spawn Harbor.
+
+    redirect_stdout alone cannot route inherited child-process descriptors or
+    logging handlers bound before entry. Duplicate the payload descriptor first,
+    then route both Python stdout and the process stdout to stderr until workers
+    have drained. This is CLI-only process-global state, not a server API.
+    """
+    original = sys.stdout
+    original.flush()
+    sys.stderr.flush()
+    try:
+        out_fd, err_fd = original.fileno(), sys.stderr.fileno()
+    except (AttributeError, io.UnsupportedOperation):
+        # Embedded callers may supply StringIO; no OS stdout exists to redirect.
+        with redirect_stdout(sys.stderr):
+            yield original
+        return
+
+    saved_fd = os.dup(out_fd)
+    payload = os.fdopen(
+        saved_fd, "w", encoding=original.encoding or "utf-8",
+        errors=original.errors or "strict", closefd=True,
+    )
+    kernel32 = None
+    old_handle = None
+    same_handle = False
+    if os.name == "nt":
+        import ctypes
+        from ctypes import wintypes
+        import msvcrt
+
+        kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+        kernel32.GetStdHandle.argtypes = [wintypes.DWORD]
+        kernel32.GetStdHandle.restype = wintypes.HANDLE
+        kernel32.SetStdHandle.argtypes = [wintypes.DWORD, wintypes.HANDLE]
+        kernel32.SetStdHandle.restype = wintypes.BOOL
+        old_handle = kernel32.GetStdHandle(-11)  # STD_OUTPUT_HANDLE
+        same_handle = old_handle == msvcrt.get_osfhandle(out_fd)
+
+    try:
+        os.dup2(err_fd, out_fd)
+        if kernel32 is not None:
+            # Windows Popen inherits Win32 standard handles, not CRT fd 1.
+            if not kernel32.SetStdHandle(-11, msvcrt.get_osfhandle(out_fd)):
+                raise ctypes.WinError(ctypes.get_last_error())
+        with redirect_stdout(sys.stderr):
+            yield payload
+    finally:
+        try:
+            sys.stderr.flush()
+            original.flush()
+            payload.flush()
+        finally:
+            os.dup2(saved_fd, out_fd)
+            if kernel32 is not None:
+                restored = msvcrt.get_osfhandle(out_fd) if same_handle else old_handle
+                kernel32.SetStdHandle(-11, restored)
+            payload.close()
+
+
+def _with_output_stream(handler):
+    @wraps(handler)
+    def run(args):
+        formats = {part.strip() for part in (args.format or "text").split(",")}
+        if formats & {"json", "csv", "pdf"}:
+            with _diagnostics_on_stderr() as output:
+                return handler(args, output=output)
+        return handler(args, output=sys.stdout)
+
+    return run
+
+
+@_with_output_stream
+def _cmd_list(args: argparse.Namespace, *, output: TextIO) -> None:
     svc = _build_service(_repo_root(args))
     rows = svc.list_experiments()
     if args.format == "json":
-        sys.stdout.write(json.dumps(rows, indent=2) + "\n")
+        output.write(json.dumps(rows, indent=2) + "\n")
     else:
-        sys.stdout.write(_format_list_text(rows))
+        output.write(_format_list_text(rows))
 
 
-def _cmd_show(args: argparse.Namespace) -> None:
+@_with_output_stream
+def _cmd_show(args: argparse.Namespace, *, output: TextIO) -> None:
     svc = _build_service(_repo_root(args))
     try:
         manifest = svc.get_experiment(args.experiment_id)
     except Exception as exc:  # noqa: BLE001
         sys.exit(f"matraix experiment show: {exc}")
     if args.format == "json":
-        sys.stdout.write(json.dumps(manifest, indent=2) + "\n")
+        output.write(json.dumps(manifest, indent=2) + "\n")
         return
     prog = manifest.get("progress") or {}
     lines = [
@@ -271,10 +350,11 @@ def _cmd_show(args: argparse.Namespace) -> None:
             f"    arm {cell.get('cellId')}: {cell.get('arm') or '—'} "
             f"[{cell.get('status', '—')}] job={cell.get('jobName')}"
         )
-    sys.stdout.write("\n".join(lines) + "\n")
+    output.write("\n".join(lines) + "\n")
 
 
-def _cmd_analyze(args: argparse.Namespace) -> None:
+@_with_output_stream
+def _cmd_analyze(args: argparse.Namespace, *, output: TextIO) -> None:
     svc = _build_service(_repo_root(args))
     alpha = 1.0 - float(args.confidence)
     if not (0.0 < alpha < 1.0):
@@ -333,8 +413,8 @@ def _cmd_analyze(args: argparse.Namespace) -> None:
 
     for i, fmt in enumerate(formats):
         if len(formats) > 1:
-            print(f"===== {fmt} =====")
-        sys.stdout.write(writers[fmt]())
+            print(f"===== {fmt} =====", file=output)
+        output.write(writers[fmt]())
 
 
 def _harbor_job_names(manifest: dict[str, Any] | None, harbor: Any) -> list[str]:
@@ -387,7 +467,8 @@ def _shutdown_harbor(svc: Any) -> None:
         shutdown()
 
 
-def _cmd_create(args: argparse.Namespace) -> None:
+@_with_output_stream
+def _cmd_create(args: argparse.Namespace, *, output: TextIO) -> None:
     svc = _build_service(_repo_root(args))
     manifest: dict[str, Any] | None = None
     try:
@@ -428,7 +509,7 @@ def _cmd_create(args: argparse.Namespace) -> None:
             except Exception:  # noqa: BLE001
                 pass
         if args.format == "json":
-            sys.stdout.write(json.dumps(manifest, indent=2) + "\n")
+            output.write(json.dumps(manifest, indent=2) + "\n")
         else:
             print(f"\nInspect with:  matraix experiment analyze {exp_id}", file=sys.stderr)
         if failed:
