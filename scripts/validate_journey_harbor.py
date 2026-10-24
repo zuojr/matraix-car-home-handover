@@ -143,7 +143,8 @@ def main():
         manifest = _cli_create(repo, pool, profiles)
         names = [c["jobName"] for c in manifest["cells"]]
         assert len(names) == 8
-        assert manifest["status"] == "completed"
+        assert manifest["status"] == "complete"
+        assert manifest["progress"]["completedTrials"] == 8
         exp_id = manifest["experimentId"]
         analysis = svc.get_experiment_analysis(exp_id)
         assert len(analysis["armSizes"]) == 8 and set(

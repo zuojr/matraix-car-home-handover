@@ -3663,7 +3663,7 @@
       "corePatchFileSha256": {
         "src/matraix/experiment_cli.py": "fbd6a99112d75cdf05705f633390e6a41402090a5c865aa020cb6ce01a157756",
         "tests/unit/matraix/test_experiment_cli.py": "380cf51c81d464742b880fdf20c38627c3e8cdceb8874a55aa5321119717f230",
-        "scripts/validate_journey_harbor.py": "412559835e0f0f2e9d195fe605da0ab6378bf2860e2e4e5c6fe9f34badc18a6c"
+        "scripts/validate_journey_harbor.py": "2f30ee89c827be01a2ef3eab18b201dec4605ce76f32d891e844dc6b9002a715"
       },
       "verification": "Scripted regression and real Harbor acceptance; see docs/journeys/VALIDATION.md and Actions for this commit."
     }
