@@ -1,0 +1,24 @@
+artifactName: survey_result.json
+instructions: |
+  Answer as yourself. The same questionnaire is shown to every persona; keep the
+  question ids exactly as written.
+questions:
+  - id: trust_in_ai
+    prompt: How much do you trust the AI-generated recommendations?
+    type: likert
+    minValue: 1
+    maxValue: 7
+  - id: adoption_intent
+    prompt: How likely are you to act on a recommendation without double-checking?
+    type: likert
+    minValue: 1
+    maxValue: 7
+  - id: perceived_risk
+    prompt: How risky does relying on these recommendations feel? (higher = riskier)
+    type: likert
+    minValue: 1
+    maxValue: 7
+  - id: recommended_channel
+    prompt: Where would you most want these recommendations to appear?
+    type: single_choice
+    options: ["in_app", "email", "weekly_digest", "never"]

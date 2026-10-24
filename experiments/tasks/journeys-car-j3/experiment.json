@@ -1,0 +1,73 @@
+{
+  "schemaVersion": "1.0",
+  "appType": "chatbot",
+  "verifier": "custom",
+  "outputArtifact": "application_result.json",
+  "hypothesis": "Information disclosure and assigned current priority may affect programmatically verified task completion. These conditions do not replace the original persona attributes.",
+  "compareBy": "system",
+  "design": "full_factorial",
+  "armAssignment": "shared",
+  "factors": [
+    {
+      "id": "condition",
+      "label": "condition",
+      "space": "system",
+      "source": "stimulus",
+      "baseline": "c1",
+      "levels": [
+        {
+          "id": "c1",
+          "label": "C1",
+          "value": "C1"
+        },
+        {
+          "id": "c2",
+          "label": "C2",
+          "value": "C2"
+        },
+        {
+          "id": "c3",
+          "label": "C3",
+          "value": "C3"
+        },
+        {
+          "id": "c4",
+          "label": "C4",
+          "value": "C4"
+        }
+      ]
+    },
+    {
+      "id": "variant",
+      "label": "variant",
+      "space": "system",
+      "source": "stimulus",
+      "baseline": "main",
+      "levels": [
+        {
+          "id": "main",
+          "label": "main",
+          "value": "main"
+        },
+        {
+          "id": "boundary",
+          "label": "boundary",
+          "value": "boundary"
+        }
+      ]
+    }
+  ],
+  "constants": [],
+  "signals": [],
+  "metricContract": {
+    "primary": [
+      "programmatic_task_success"
+    ],
+    "secondary": [
+      "feasible_partial_completion"
+    ],
+    "guardrail": [
+      "missing_episodes"
+    ]
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "schemaVersion": "1.0",
+  "sources": [],
+  "dimensionFilters": {
+    "economic_motivation": [
+      "Cost-sensitive",
+      "Value-driven",
+      "Premium-seeking",
+      "Indifferent"
+    ],
+    "age_bracket": [
+      "25-34",
+      "35-44"
+    ],
+    "life_stage": [
+      "Parent of young kids"
+    ]
+  },
+  "sampling": {
+    "mode": "stratified",
+    "fields": [
+      "economic_motivation"
+    ],
+    "allocation": "equalTotal",
+    "sampleSize": 8
+  }
+}

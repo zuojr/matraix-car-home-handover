@@ -1,0 +1,45 @@
+# Auto-label PRs by module
+
+"persona":
+  - changed-files:
+      - any-glob-to-any-file:
+          - persona/**
+
+"application":
+  - changed-files:
+      - any-glob-to-any-file:
+          - application/**
+
+"environment":
+  - changed-files:
+      - any-glob-to-any-file:
+          - environment/**
+          - src/**
+          - configs/**
+          - apps/**
+          - packages/**
+          - tests/**
+          - .github/**
+          - pyproject.toml
+          - uv.lock
+          - .gitignore
+
+"documentation":
+  - changed-files:
+      - any-glob-to-any-file:
+          - docs/**
+          - CONTRIBUTING.md
+          - README.md
+
+"migration":
+  - changed-files:
+      - any-glob-to-any-file:
+          - docs/migration/**
+          - migration/matraix/**
+
+"i18n":
+  - changed-files:
+      - any-glob-to-any-file:
+          - application/playground/frontend/src/i18n/**
+          - persona/schema/labels/**
+          - docs/i18n/**

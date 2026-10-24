@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "1.0",
+  "sources": [],
+  "dimensionFilters": {
+    "life_stage": [
+      "Early career",
+      "Mid-life",
+      "Parent of young kids"
+    ],
+    "age_bracket": [
+      "25-34",
+      "35-44"
+    ]
+  },
+  "sampling": {
+    "mode": "random",
+    "sampleSize": 6
+  }
+}

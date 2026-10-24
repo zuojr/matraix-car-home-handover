@@ -1,0 +1,12 @@
+{
+  "id": "psa_census_puf",
+  "source": {
+    "type": "official_population_survey_reference",
+    "url": "https://psada.psa.gov.ph/"
+  },
+  "dimensions_claimed": 20,
+  "format": "data_dictionary_reference",
+  "license": "psa-data-use-agreement",
+  "gated": true,
+  "notes": "Philippine Statistics Authority Census of Population and Housing / FIES / LFS public-use files. Requires a PSA data-use agreement. Map via persona/curation/existing_data/scripts/crosswalks/psa_ph.py. This is the demographic backbone for a Philippine population pool; WVS-PH covers values/attitudes."
+}

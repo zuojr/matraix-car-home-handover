@@ -1,0 +1,32 @@
+version = "1.0"
+artifacts = [
+    "/app/output",
+    { source = "/var/log/site/web-a.access.log", service = "web-a" },
+    { source = "/var/log/site/web-b.access.log", service = "web-b" },
+]
+
+[task]
+name = "experiments/web-compare-options"
+
+[metadata]
+difficulty = "medium"
+type = "web"
+domain = "software"
+tags = [ "experiment", "web", "landing page", "signup conversion", "copy and layout a/b", "persona-sensitive conversion",]
+
+[verifier]
+timeout_sec = 300.0
+
+[agent]
+timeout_sec = 600.0
+network_mode = "public"
+
+[environment]
+definition = "application/shared-web-playwright"
+local_compose = "application/web-landing-ab_pricing"
+build_timeout_sec = 900.0
+cpus = 1
+memory_mb = 2048
+storage_mb = 10240
+gpus = 0
+network_mode = "public"

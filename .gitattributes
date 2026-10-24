@@ -1,0 +1,21 @@
+# Normalize all text files to LF, everywhere.
+#
+# Shell scripts, task verifiers, and Dockerfile COPY'd files are executed
+# inside Linux containers; a CRLF checkout on Windows (core.autocrlf=true)
+# would break them with "\r: command not found". Forcing LF keeps clones
+# working on every platform, including Windows (WSL2 or Git Bash).
+* text=auto eol=lf
+
+# Binary assets — never touch line endings.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.pdf binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.zip binary
+*.gz binary

@@ -1,0 +1,32 @@
+{
+  "schemaVersion": "1.0",
+  "appType": "survey",
+  "verifier": "survey_generic",
+  "outputArtifact": "survey_result.json",
+  "hypothesis": "Among working-age, digitally comfortable users in North America and Western Europe, economic motivation shifts how much people trust AI-generated recommendations: for the identical questionnaire, premium-seeking users report higher trust and adoption intent than cost-sensitive users.",
+  "compareBy": "persona",
+  "design": "ab_n",
+  "factors": [
+    {
+      "id": "economic_motivation",
+      "label": "Economic motivation",
+      "space": "persona",
+      "source": "catalog",
+      "description": "Persona attribute under test. Arms contrast on this attribute (a classification factor that cannot be randomly assigned); the environment is held constant via constants[]. Candidate pool eligibility lives in persona_strategy.json.",
+      "baseline": "cost_sensitive",
+      "levels": [
+        { "id": "cost_sensitive", "label": "Cost-sensitive", "value": "Cost-sensitive" },
+        { "id": "premium_seeking", "label": "Premium-seeking", "value": "Premium-seeking" }
+      ]
+    }
+  ],
+  "constants": [
+    { "id": "questionnaire_variant", "label": "Questionnaire", "space": "system", "value": "standard" }
+  ],
+  "signals": [],
+  "metricContract": {
+    "primary": ["trust_in_ai"],
+    "secondary": ["adoption_intent", "recommended_channel"],
+    "guardrail": ["perceived_risk"]
+  }
+}

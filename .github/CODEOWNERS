@@ -1,0 +1,4 @@
+# Every pull request automatically requests a review from both maintainers.
+# The "Require review on main" ruleset asks for 1 approving review, so either
+# one of them can unblock a merge; both are notified.
+* @JianhengHou @jintao-h

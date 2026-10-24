@@ -1,0 +1,24 @@
+artifactName: survey_result.json
+instructions: |
+  Answer as yourself based on the upgrade prompt copy you were shown. Question
+  ids are stable across copy variants; keep them exactly as written.
+questions:
+  - id: upgrade_intent
+    prompt: How likely are you to upgrade after seeing this prompt?
+    type: likert
+    minValue: 1
+    maxValue: 7
+  - id: perceived_value
+    prompt: How much value does the upgrade feel like it offers you?
+    type: likert
+    minValue: 1
+    maxValue: 7
+  - id: perceived_pressure
+    prompt: How pressured did the prompt feel? (higher = more pressure)
+    type: likert
+    minValue: 1
+    maxValue: 7
+  - id: preferred_plan
+    prompt: If you did upgrade, which plan would you most likely pick?
+    type: single_choice
+    options: ["stay_free", "team", "business", "need_more_info"]

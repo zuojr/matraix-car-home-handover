@@ -1,0 +1,24 @@
+artifactName: survey_result.json
+instructions: |
+  Answer as yourself based on the onboarding framing you were shown. Question ids
+  are stable across framings; keep them exactly as written.
+questions:
+  - id: onboarding_satisfaction
+    prompt: How satisfied were you with the onboarding experience?
+    type: likert
+    minValue: 1
+    maxValue: 7
+  - id: likelihood_to_continue
+    prompt: How likely are you to keep using the product after this onboarding?
+    type: likert
+    minValue: 1
+    maxValue: 7
+  - id: perceived_effort
+    prompt: How effortful did the onboarding feel? (higher = more effort)
+    type: likert
+    minValue: 1
+    maxValue: 7
+  - id: preferred_next_step
+    prompt: What would you most likely do next?
+    type: single_choice
+    options: ["explore_on_my_own", "invite_team", "read_docs", "book_demo"]

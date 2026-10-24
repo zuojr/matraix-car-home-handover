@@ -1,0 +1,38 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://matraix.dev/experiments/expected.schema.json",
+  "title": "ExpectedGroundTruth",
+  "description": "Per-level ground truth written to variants/<levelId>/expected.json and read by a generic verifier via HARBOR_VARIANT_DIR. Fields are mode-dependent; additionalProperties is allowed so task authors can add task_* extras.",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "mode": {
+      "type": "string",
+      "enum": ["compare_choose", "fill_submit", "search_select", "transcript", "survey_response", "none"],
+      "description": "Overrides experiment.json.submissionSchema for this level if set."
+    },
+    "output_artifact": {
+      "type": "string",
+      "description": "Filename under /app/output the agent must produce (e.g. plan_comparison.json)."
+    },
+    "source_url": {
+      "type": "string",
+      "description": "Optional constraint: the submission's recorded source URL must equal this."
+    },
+    "option_ids": {
+      "type": "object",
+      "description": "compare_choose/search_select: canonical option id -> canonical label. Defines the valid choice set and expected label mapping.",
+      "additionalProperties": { "type": "string" }
+    },
+    "require_all_options_considered": {
+      "type": "boolean",
+      "default": false,
+      "description": "compare_choose: task_options_considered must contain exactly the full option_ids set."
+    },
+    "constraints": {
+      "type": "object",
+      "description": "Free-form key/value constraints the submission must match verbatim (e.g. task_billing_mode: monthly, ticker: MU).",
+      "additionalProperties": true
+    }
+  }
+}

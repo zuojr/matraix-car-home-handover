@@ -1,0 +1,1071 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Branch-based intake form for MatrAIx synthetic-user studies and controlled experiments.">
+  <title>MatrAIx Study Intake</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #17201d;
+      --muted: #5e6b66;
+      --line: #dce3df;
+      --soft: #f4f7f5;
+      --paper: #ffffff;
+      --green: #176b4d;
+      --green-dark: #0d4e37;
+      --green-soft: #e7f3ed;
+      --amber: #9a5c09;
+      --amber-soft: #fff5df;
+      --red: #a83c3c;
+      --shadow: 0 18px 55px rgba(27, 48, 40, 0.11);
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 10% 4%, rgba(90, 170, 132, 0.16), transparent 28rem),
+        linear-gradient(180deg, #f8faf9 0%, #edf3f0 100%);
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.55;
+    }
+
+    button, input, select, textarea { font: inherit; }
+
+    button { cursor: pointer; }
+
+    .shell {
+      width: min(100% - 32px, 920px);
+      margin: 32px auto 64px;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 36px;
+      border-radius: 24px 24px 0 0;
+      background: #102b22;
+      color: #fff;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -100px;
+      top: -140px;
+      width: 360px;
+      height: 360px;
+      border: 64px solid rgba(107, 208, 160, 0.12);
+      border-radius: 50%;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 28px;
+      font-size: 0.82rem;
+      font-weight: 750;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .brand-mark {
+      width: 25px;
+      height: 25px;
+      border: 1px solid rgba(255,255,255,0.42);
+      border-radius: 7px;
+      background: linear-gradient(135deg, #9ce0bf 0 48%, transparent 49% 100%);
+      transform: rotate(8deg);
+    }
+
+    h1, h2, h3, p { margin-top: 0; }
+
+    h1 {
+      position: relative;
+      z-index: 1;
+      max-width: 660px;
+      margin-bottom: 12px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(2.1rem, 7vw, 4.25rem);
+      font-weight: 500;
+      letter-spacing: -0.045em;
+      line-height: 0.98;
+    }
+
+    .hero p {
+      position: relative;
+      z-index: 1;
+      max-width: 690px;
+      margin-bottom: 0;
+      color: #cfddd7;
+      font-size: 1.03rem;
+    }
+
+    .progress-wrap {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      padding: 15px 28px;
+      border: 1px solid var(--line);
+      border-top: 0;
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(14px);
+    }
+
+    .progress-labels {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+
+    .progress-track {
+      height: 7px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #e6ece9;
+    }
+
+    .progress-bar {
+      width: 11.11%;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--green), #52a77e);
+      transition: width 260ms ease;
+    }
+
+    form {
+      border: 1px solid var(--line);
+      border-top: 0;
+      border-radius: 0 0 24px 24px;
+      background: var(--paper);
+      box-shadow: var(--shadow);
+    }
+
+    .step {
+      display: none;
+      padding: 38px 48px 32px;
+      animation: step-in 220ms ease;
+    }
+
+    .step.active { display: block; }
+
+    @keyframes step-in {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .eyebrow {
+      margin-bottom: 7px;
+      color: var(--green);
+      font-size: 0.76rem;
+      font-weight: 800;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+    }
+
+    h2 {
+      margin-bottom: 10px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(1.75rem, 4vw, 2.55rem);
+      font-weight: 500;
+      letter-spacing: -0.025em;
+      line-height: 1.12;
+    }
+
+    .lede {
+      max-width: 710px;
+      margin-bottom: 30px;
+      color: var(--muted);
+    }
+
+    .notice {
+      margin: 24px 0;
+      padding: 16px 18px;
+      border: 1px solid #efdba9;
+      border-radius: 12px;
+      background: var(--amber-soft);
+      color: #624412;
+      font-size: 0.92rem;
+    }
+
+    .notice strong { color: var(--amber); }
+
+    .field {
+      margin-bottom: 27px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0 20px;
+    }
+
+    label, legend {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--ink);
+      font-weight: 720;
+    }
+
+    .required::after {
+      content: " *";
+      color: var(--red);
+    }
+
+    .help {
+      display: block;
+      margin: -3px 0 10px;
+      color: var(--muted);
+      font-size: 0.84rem;
+      font-weight: 450;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="url"],
+    input[type="number"],
+    select,
+    textarea {
+      width: 100%;
+      border: 1px solid #c9d3ce;
+      border-radius: 10px;
+      outline: none;
+      background: #fff;
+      color: var(--ink);
+      transition: border-color 150ms ease, box-shadow 150ms ease;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="url"],
+    input[type="number"],
+    select { height: 46px; padding: 0 13px; }
+
+    textarea { min-height: 118px; padding: 12px 13px; resize: vertical; }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px rgba(23, 107, 77, 0.12);
+    }
+
+    input[type="file"] {
+      width: 100%;
+      padding: 12px;
+      border: 1px dashed #afbeb6;
+      border-radius: 10px;
+      background: var(--soft);
+    }
+
+    fieldset {
+      min-width: 0;
+      margin: 0 0 27px;
+      padding: 0;
+      border: 0;
+    }
+
+    .choice-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 11px;
+    }
+
+    .choice-grid.one-column { grid-template-columns: 1fr; }
+
+    .choice {
+      position: relative;
+      display: flex;
+      align-items: flex-start;
+      gap: 11px;
+      min-height: 52px;
+      margin: 0;
+      padding: 13px 14px;
+      border: 1px solid #d1dad5;
+      border-radius: 11px;
+      background: #fff;
+      color: var(--ink);
+      font-weight: 560;
+      cursor: pointer;
+      transition: border-color 150ms ease, background 150ms ease, transform 150ms ease;
+    }
+
+    .choice:hover {
+      border-color: #88aa9a;
+      background: #fbfdfc;
+      transform: translateY(-1px);
+    }
+
+    .choice:has(input:checked) {
+      border-color: var(--green);
+      background: var(--green-soft);
+    }
+
+    .choice input {
+      flex: 0 0 auto;
+      margin: 4px 0 0;
+      accent-color: var(--green);
+    }
+
+    .choice small {
+      display: block;
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: 440;
+    }
+
+    .branch {
+      margin: 30px 0 12px;
+      padding: 24px;
+      border: 1px solid #cfe0d7;
+      border-radius: 14px;
+      background: #f8fbf9;
+    }
+
+    .branch h3 {
+      margin-bottom: 18px;
+      font-size: 1.12rem;
+    }
+
+    .conditional[hidden] { display: none !important; }
+
+    .template {
+      padding: 12px 14px;
+      border-left: 3px solid #94b7a6;
+      background: var(--soft);
+      color: #43514b;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.8rem;
+      white-space: pre-line;
+    }
+
+    .actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 34px;
+      padding-top: 23px;
+      border-top: 1px solid var(--line);
+    }
+
+    .actions-right { display: flex; gap: 10px; margin-left: auto; }
+
+    .btn {
+      min-height: 44px;
+      padding: 0 18px;
+      border: 1px solid transparent;
+      border-radius: 9px;
+      font-weight: 720;
+      transition: transform 120ms ease, background 120ms ease;
+    }
+
+    .btn:hover { transform: translateY(-1px); }
+
+    .btn-primary {
+      background: var(--green);
+      color: #fff;
+    }
+
+    .btn-primary:hover { background: var(--green-dark); }
+
+    .btn-secondary {
+      border-color: #cbd5d0;
+      background: #fff;
+      color: var(--ink);
+    }
+
+    .btn-quiet {
+      padding-inline: 7px;
+      background: transparent;
+      color: var(--muted);
+    }
+
+    .review-list {
+      display: grid;
+      gap: 17px;
+    }
+
+    .review-card {
+      padding: 20px;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      background: #fbfcfb;
+    }
+
+    .review-card h3 {
+      margin-bottom: 13px;
+      color: var(--green-dark);
+      font-size: 1rem;
+    }
+
+    .review-row {
+      display: grid;
+      grid-template-columns: minmax(150px, 0.38fr) 1fr;
+      gap: 15px;
+      padding: 8px 0;
+      border-top: 1px solid #e7ece9;
+      font-size: 0.88rem;
+    }
+
+    .review-row:first-of-type { border-top: 0; }
+    .review-key { color: var(--muted); font-weight: 650; }
+    .review-value { white-space: pre-wrap; overflow-wrap: anywhere; }
+
+    .success {
+      display: none;
+      padding: 32px;
+      border: 1px solid #bbd9ca;
+      border-radius: 15px;
+      background: var(--green-soft);
+      text-align: center;
+    }
+
+    .success.visible { display: block; }
+    .success h3 { color: var(--green-dark); font-size: 1.35rem; }
+
+    .status {
+      min-height: 21px;
+      color: var(--muted);
+      font-size: 0.83rem;
+    }
+
+    .footer-note {
+      margin-top: 20px;
+      color: #64726c;
+      font-size: 0.78rem;
+      text-align: center;
+    }
+
+    @media (max-width: 680px) {
+      .shell { width: min(100% - 18px, 920px); margin-top: 10px; }
+      .hero { padding: 28px 22px; border-radius: 18px 18px 0 0; }
+      .progress-wrap { padding: 13px 18px; }
+      .step { padding: 28px 20px 24px; }
+      .grid-2, .choice-grid { grid-template-columns: 1fr; }
+      .branch { padding: 19px 15px; }
+      .actions { align-items: stretch; }
+      .actions-right { width: 100%; }
+      .actions-right .btn { flex: 1; }
+      .review-row { grid-template-columns: 1fr; gap: 3px; }
+    }
+
+    @media print {
+      body { background: #fff; }
+      .shell { width: 100%; margin: 0; }
+      .hero, .progress-wrap, .actions, .footer-note { display: none !important; }
+      form { border: 0; box-shadow: none; }
+      .step { display: none !important; }
+      .step[data-step="8"] { display: block !important; padding: 0; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="hero">
+      <div class="brand"><span class="brand-mark" aria-hidden="true"></span>MatrAIx Research</div>
+      <h1>Study intake</h1>
+      <p>Tell us what you need to learn, who should be simulated, and what a useful result looks like. Conditional questions keep the intake focused on your study.</p>
+    </header>
+
+    <div class="progress-wrap" aria-label="Form progress">
+      <div class="progress-labels">
+        <span id="progress-name">Request type</span>
+        <span id="progress-count">Step 1 of 8</span>
+      </div>
+      <div class="progress-track"><div class="progress-bar" id="progress-bar"></div></div>
+    </div>
+
+    <form id="intake-form" novalidate>
+      <section class="step active" data-step="1" data-title="Request type">
+        <div class="eyebrow">Step 1</div>
+        <h2>How would you like to use MatrAIx?</h2>
+        <p class="lede">This intake is designed for individual research studies. Platform integrations and recurring automated workflows use a separate technical-support process.</p>
+
+        <fieldset>
+          <legend class="required">What do you need?</legend>
+          <div class="choice-grid one-column">
+            <label class="choice">
+              <input type="radio" name="request_path" value="study" required>
+              <span>Run a research study<small>Evaluate one experience or compare alternatives with synthetic users.</small></span>
+            </label>
+            <label class="choice">
+              <input type="radio" name="request_path" value="integration">
+              <span>Platform or API integration<small>Connect MatrAIx to a product, pipeline, or recurring automated workflow.</small></span>
+            </label>
+          </div>
+        </fieldset>
+
+        <div class="branch conditional" data-field="request_path" data-values="integration" hidden>
+          <h3>Contact API Support</h3>
+          <p>Platform integrations and recurring automated studies require technical scoping. Please contact the MatrAIx API Support team directly instead of completing this research-study intake.</p>
+          <p class="help">Do not send credentials or API keys in an initial support request.</p>
+        </div>
+
+        <div class="actions conditional" data-field="request_path" data-values="study" hidden>
+          <span class="status" aria-live="polite"></span>
+          <div class="actions-right"><button class="btn btn-primary next" type="button">Start study intake</button></div>
+        </div>
+      </section>
+
+      <section class="step" data-step="2" data-title="Project">
+        <div class="eyebrow">Step 2</div>
+        <h2>Project basics</h2>
+        <p class="lede">Tell us who you are and the decision you want this study to support. Detailed study questions come next.</p>
+
+        <div class="notice"><strong>Do not upload secrets or personal data.</strong> Do not enter passwords, API keys, customer-level records, patient data, or other personally identifiable information. Secure access can be arranged separately.</div>
+
+        <div class="grid-2">
+          <div class="field">
+            <label class="required" for="full_name">Full name</label>
+            <input id="full_name" name="full_name" type="text" autocomplete="name" required>
+          </div>
+          <div class="field">
+            <label class="required" for="work_email">Work email</label>
+            <input id="work_email" name="work_email" type="email" autocomplete="email" required>
+          </div>
+          <div class="field">
+            <label class="required" for="organization">Organization</label>
+            <input id="organization" name="organization" type="text" autocomplete="organization" required>
+          </div>
+          <div class="field">
+            <label class="required" for="role_title">Role or title</label>
+            <input id="role_title" name="role_title" type="text" autocomplete="organization-title" required>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="required" for="study_name">Project or study name</label>
+          <input id="study_name" name="study_name" type="text" required>
+        </div>
+
+        <div class="field">
+          <label class="required" for="project_context">Briefly introduce your organization and what you want to learn</label>
+          <span class="help">In a few sentences, describe what your organization does, the relevant product, service, or research context, and the decision this study should help you make. You can provide detailed study materials later.</span>
+          <textarea id="project_context" name="project_context" required></textarea>
+        </div>
+
+        <div class="field">
+          <label class="required" for="timeline">When would you like the first results?</label>
+          <select id="timeline" name="timeline" required>
+            <option value="">Select one</option>
+            <option>Within two weeks</option>
+            <option>This quarter</option>
+            <option>Next quarter</option>
+            <option>Exploring only</option>
+            <option>Other</option>
+          </select>
+        </div>
+
+        <div class="actions">
+          <span class="status" aria-live="polite"></span>
+          <div class="actions-right"><button class="btn btn-primary next" type="button">Continue</button></div>
+        </div>
+      </section>
+
+      <section class="step" data-step="3" data-title="Study approach">
+        <div class="eyebrow">Step 3</div>
+        <h2>Study approach</h2>
+        <p class="lede">Choose the option that best describes the first study. The form will show only the questions needed for that approach.</p>
+
+        <fieldset>
+          <legend class="required">Which option best describes the first study?</legend>
+          <div class="choice-grid one-column">
+            <label class="choice">
+              <input type="radio" name="study_approach" value="single" required>
+              <span>Evaluate one experience<small>Test one current product, concept, journey, chatbot, website, or app.</small></span>
+            </label>
+            <label class="choice">
+              <input type="radio" name="study_approach" value="compare">
+              <span>Compare alternatives<small>Run a controlled experiment across versions, conditions, prices, messages, or cohorts.</small></span>
+            </label>
+            <label class="choice">
+              <input type="radio" name="study_approach" value="unsure">
+              <span>Not sure<small>Share the decision and available materials; we will recommend an approach.</small></span>
+            </label>
+          </div>
+        </fieldset>
+
+        <div class="branch conditional" data-field="study_approach" data-values="single" hidden>
+          <h3>Evaluate one experience</h3>
+          <fieldset>
+            <legend class="required">What should the simulated users interact with?</legend>
+            <div class="choice-grid">
+              <label class="choice"><input type="radio" name="single_surface" value="Written concept or survey" data-required="true"> Written concept or survey</label>
+              <label class="choice"><input type="radio" name="single_surface" value="Chatbot"> Chatbot or conversational system</label>
+              <label class="choice"><input type="radio" name="single_surface" value="Website"> Website or web application</label>
+              <label class="choice"><input type="radio" name="single_surface" value="Application"> Desktop or mobile application</label>
+              <label class="choice"><input type="radio" name="single_surface" value="API or other"> API or other system</label>
+              <label class="choice"><input type="radio" name="single_surface" value="Not sure"> Not sure</label>
+            </div>
+          </fieldset>
+          <div class="field">
+            <label class="required" for="single_task">What should the simulated user try to do?</label>
+            <span class="help">Describe the starting point, expected actions, and what successful completion looks like.</span>
+            <textarea id="single_task" name="single_task" data-required="true"></textarea>
+          </div>
+          <div class="field">
+            <label class="required" for="single_focus">What part of the experience should we focus on?</label>
+            <textarea id="single_focus" name="single_focus" data-required="true"></textarea>
+          </div>
+          <div class="field">
+            <label for="single_material_url">Link to the exact experience or material</label>
+            <input id="single_material_url" name="single_material_url" type="url" placeholder="https://">
+          </div>
+          <div class="field">
+            <label for="single_material_file">Or upload supporting material</label>
+            <input id="single_material_file" name="single_material_file" type="file" multiple>
+          </div>
+        </div>
+
+        <div class="branch conditional" data-field="study_approach" data-values="compare" hidden>
+          <h3>Compare alternatives</h3>
+          <fieldset>
+            <legend class="required">What would you like to compare?</legend>
+            <div class="choice-grid one-column">
+              <label class="choice">
+                <input type="radio" name="comparison_type" value="systems" data-required="true">
+                <span>Different systems or versions<small>Compare versions, conditions, messages, prices, journeys, or other product differences using the same cohort.</small></span>
+              </label>
+              <label class="choice">
+                <input type="radio" name="comparison_type" value="cohorts">
+                <span>Different cohorts<small>Compare how different user groups respond to the same system, experience, or stimulus.</small></span>
+              </label>
+            </div>
+          </fieldset>
+
+          <div class="conditional" data-field="comparison_type" data-values="systems" hidden>
+            <div class="field">
+              <label class="required" for="system_versions">Describe the systems, versions, or conditions you want to compare</label>
+              <span class="help">Label each alternative clearly as A, B, C, etc., and explain the main difference between them.</span>
+              <textarea id="system_versions" name="system_versions" data-required="true"></textarea>
+            </div>
+            <div class="field">
+              <label class="required" for="system_materials">Provide the exact material or links for each alternative</label>
+              <textarea id="system_materials" name="system_materials" data-required="true"></textarea>
+            </div>
+            <div class="field">
+              <label for="system_files">Upload supporting materials</label>
+              <input id="system_files" name="system_files" type="file" multiple>
+            </div>
+          </div>
+
+          <div class="conditional" data-field="comparison_type" data-values="cohorts" hidden>
+            <div class="field">
+              <label class="required" for="cohort_experience">Describe the common system, experience, or stimulus both cohorts will evaluate</label>
+              <textarea id="cohort_experience" name="cohort_experience" data-required="true"></textarea>
+            </div>
+            <div class="field">
+              <label for="cohort_materials">Provide the exact material or link, if available</label>
+              <textarea id="cohort_materials" name="cohort_materials"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="branch conditional" data-field="study_approach" data-values="unsure" hidden>
+          <h3>Help us recommend an approach</h3>
+          <div class="field">
+            <label class="required" for="unsure_materials">What materials or systems are currently available?</label>
+            <textarea id="unsure_materials" name="unsure_materials" data-required="true"></textarea>
+          </div>
+          <div class="field">
+            <label class="required" for="unsure_result">What would a useful result look like?</label>
+            <textarea id="unsure_result" name="unsure_result" data-required="true"></textarea>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button class="btn btn-secondary back" type="button">Back</button>
+          <span class="status" aria-live="polite"></span>
+          <div class="actions-right"><button class="btn btn-primary next" type="button">Continue</button></div>
+        </div>
+      </section>
+
+      <section class="step" data-step="4" data-title="Population">
+        <div class="eyebrow">Step 4</div>
+        <h2>Target population</h2>
+        <p class="lede">Describe the cohort you want simulated. We will map your description to the available persona dimensions.</p>
+
+        <input id="population_mode" name="population_mode" type="hidden" value="">
+
+        <div class="conditional" data-field="population_mode" data-values="shared" hidden>
+          <div class="field">
+            <label class="required" for="shared_users">Describe the users you want simulated</label>
+            <textarea id="shared_users" name="shared_users" data-required="true"></textarea>
+          </div>
+          <div class="field">
+            <label for="shared_segments">Define desired segment values and approximate proportions</label>
+            <span class="help">For example: 60% ages 18–24 and 40% ages 25–34; 50% existing customers and 50% prospects. If unknown, write “recommend.”</span>
+            <textarea id="shared_segments" name="shared_segments"></textarea>
+          </div>
+          <div class="field">
+            <label for="shared_population_notes">Other population information you would like to provide</label>
+            <textarea id="shared_population_notes" name="shared_population_notes"></textarea>
+          </div>
+        </div>
+
+        <div class="conditional" data-field="population_mode" data-values="cohorts" hidden>
+          <div class="grid-2">
+            <div class="field">
+              <label class="required" for="cohort_a">Describe Cohort A</label>
+              <textarea id="cohort_a" name="cohort_a" data-required="true"></textarea>
+            </div>
+            <div class="field">
+              <label class="required" for="cohort_b">Describe Cohort B</label>
+              <textarea id="cohort_b" name="cohort_b" data-required="true"></textarea>
+            </div>
+          </div>
+          <div class="field">
+            <label class="required" for="cohort_main_difference">What is the main difference between the two cohorts?</label>
+            <textarea id="cohort_main_difference" name="cohort_main_difference" data-required="true"></textarea>
+          </div>
+          <div class="field">
+            <label for="cohort_segments">Define desired segment values, cohort sizes, and approximate proportions</label>
+            <span class="help">Describe the intended balance between cohorts and any important composition within each cohort. If unknown, write “recommend.”</span>
+            <textarea id="cohort_segments" name="cohort_segments"></textarea>
+          </div>
+          <div class="field">
+            <label for="cohort_population_notes">Other population information you would like to provide</label>
+            <textarea id="cohort_population_notes" name="cohort_population_notes"></textarea>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button class="btn btn-secondary back" type="button">Back</button>
+          <span class="status" aria-live="polite"></span>
+          <div class="actions-right"><button class="btn btn-primary next" type="button">Continue</button></div>
+        </div>
+      </section>
+
+      <section class="step" data-step="5" data-title="Measurement">
+        <div class="eyebrow">Step 5</div>
+        <h2>Outcomes and success</h2>
+        <p class="lede">Tell us how you will decide whether the study is useful.</p>
+
+        <div class="field">
+          <label class="required" for="success_metrics">What are your success metrics?</label>
+          <span class="help">List the outcomes you care about and, if known, what result would be meaningful—for example, trust, signup intent, task completion, willingness to pay, or a difference between alternatives.</span>
+          <textarea id="success_metrics" name="success_metrics" required></textarea>
+        </div>
+
+        <div class="field">
+          <label for="current_baseline">What is the current baseline, if known?</label>
+          <span class="help">Provide any current human, historical, operational, or expert benchmark. If no baseline exists, leave this blank.</span>
+          <textarea id="current_baseline" name="current_baseline"></textarea>
+        </div>
+
+        <div class="actions">
+          <button class="btn btn-secondary back" type="button">Back</button>
+          <span class="status" aria-live="polite"></span>
+          <div class="actions-right"><button class="btn btn-primary next" type="button">Continue</button></div>
+        </div>
+      </section>
+
+      <section class="step" data-step="6" data-title="Deliverables">
+        <div class="eyebrow">Step 6</div>
+        <h2>Desired deliverables</h2>
+        <p class="lede">Describe what you would like to receive when the study is complete.</p>
+
+        <div class="field">
+          <label class="required" for="desired_deliverables">What deliverables would you like?</label>
+          <span class="help">Examples include a decision report, presentation, persona or segment dataset, raw results, recommendations, or another format.</span>
+          <textarea id="desired_deliverables" name="desired_deliverables" required></textarea>
+        </div>
+
+        <div class="actions">
+          <button class="btn btn-secondary back" type="button">Back</button>
+          <span class="status" aria-live="polite"></span>
+          <div class="actions-right"><button class="btn btn-primary next" type="button">Continue</button></div>
+        </div>
+      </section>
+
+      <section class="step" data-step="7" data-title="Governance">
+        <div class="eyebrow">Step 7</div>
+        <h2>Confidentiality and governance</h2>
+        <p class="lede">Help us determine whether the study needs additional review, safeguards, or a private runner.</p>
+
+        <fieldset>
+          <legend class="required">Does this study involve confidential data or materials?</legend>
+          <span class="help">Do not upload confidential data through this prototype. We can arrange an appropriate sharing process later.</span>
+          <div class="choice-grid">
+            <label class="choice"><input type="radio" name="confidential_data" value="Yes" required> Yes</label>
+            <label class="choice"><input type="radio" name="confidential_data" value="No"> No</label>
+            <label class="choice"><input type="radio" name="confidential_data" value="Not sure"> Not sure</label>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend class="required">After redaction and de-sensitization, may we include this task in the open-source MatrAIx benchmark?</legend>
+          <div class="choice-grid">
+            <label class="choice"><input type="radio" name="benchmark_permission" value="Yes" required> Yes</label>
+            <label class="choice"><input type="radio" name="benchmark_permission" value="No"> No</label>
+            <label class="choice"><input type="radio" name="benchmark_permission" value="Subject to review"> Possibly, subject to review</label>
+          </div>
+        </fieldset>
+
+        <div class="field">
+          <label for="governance_alerts">Is there anything else we should be alerted to?</label>
+          <span class="help">For example: minors, health or wellbeing, elections, vulnerable populations, personal data, licensed identities, legal constraints, prohibited claims, or content-rights requirements.</span>
+          <textarea id="governance_alerts" name="governance_alerts"></textarea>
+        </div>
+
+        <div class="actions">
+          <button class="btn btn-secondary back" type="button">Back</button>
+          <span class="status" aria-live="polite"></span>
+          <div class="actions-right"><button class="btn btn-primary next" type="button">Review responses</button></div>
+        </div>
+      </section>
+
+      <section class="step" data-step="8" data-title="Review">
+        <div class="eyebrow">Step 8</div>
+        <h2>Review your intake</h2>
+        <p class="lede">Confirm the study details before exporting or submitting. File names are included in the review, but files themselves are not embedded in the JSON export.</p>
+
+        <div id="review-list" class="review-list"></div>
+
+        <div class="success" id="success-panel" role="status">
+          <h3>Intake prepared</h3>
+          <p>This standalone prototype does not send data to a server. Download the JSON or print the review, then connect the submit action to your preferred form endpoint.</p>
+        </div>
+
+        <div class="actions">
+          <button class="btn btn-secondary back" type="button">Back</button>
+          <div class="actions-right">
+            <button class="btn btn-secondary" id="print-review" type="button">Print</button>
+            <button class="btn btn-secondary" id="download-json" type="button">Download JSON</button>
+            <button class="btn btn-primary" type="submit">Prepare intake</button>
+          </div>
+        </div>
+      </section>
+    </form>
+
+    <p class="footer-note">Standalone prototype. No response leaves this browser unless submission handling is added.</p>
+  </main>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const form = document.getElementById("intake-form");
+      const steps = Array.from(document.querySelectorAll(".step"));
+      const progressBar = document.getElementById("progress-bar");
+      const progressName = document.getElementById("progress-name");
+      const progressCount = document.getElementById("progress-count");
+      const reviewList = document.getElementById("review-list");
+      const successPanel = document.getElementById("success-panel");
+      let currentStep = 0;
+
+      const getValues = (name) => {
+        const controls = Array.from(form.elements).filter((control) => control.name === name && !control.disabled);
+        return controls
+          .filter((control) => {
+            if (control.type === "radio" || control.type === "checkbox") return control.checked;
+            return Boolean(control.value);
+          })
+          .map((control) => control.value);
+      };
+
+      const isConditionalVisible = (element) => {
+        const field = element.dataset.field;
+        const allowed = (element.dataset.values || "").split(",").map((item) => item.trim());
+        return getValues(field).some((value) => allowed.includes(value));
+      };
+
+      const setControlState = (container, visible) => {
+        container.hidden = !visible;
+        container.querySelectorAll("input, select, textarea").forEach((control) => {
+          control.disabled = !visible;
+          if (control.dataset.required === "true") control.required = visible;
+        });
+      };
+
+      const updateDerivedValues = () => {
+        const approach = getValues("study_approach")[0] || "";
+        const comparisonType = getValues("comparison_type")[0] || "";
+        const populationMode = form.elements.population_mode;
+        if (!populationMode) return;
+        populationMode.value = approach === "compare" && comparisonType === "cohorts"
+          ? "cohorts"
+          : approach
+            ? "shared"
+            : "";
+      };
+
+      const updateConditionals = () => {
+        updateDerivedValues();
+        document.querySelectorAll(".conditional").forEach((element) => {
+          setControlState(element, isConditionalVisible(element));
+        });
+      };
+
+      const showStep = (index) => {
+        currentStep = Math.max(0, Math.min(index, steps.length - 1));
+        steps.forEach((step, stepIndex) => step.classList.toggle("active", stepIndex === currentStep));
+        const active = steps[currentStep];
+        progressName.textContent = active.dataset.title;
+        progressCount.textContent = `Step ${currentStep + 1} of ${steps.length}`;
+        progressBar.style.width = `${((currentStep + 1) / steps.length) * 100}%`;
+        successPanel.classList.remove("visible");
+        updateConditionals();
+        if (currentStep === steps.length - 1) buildReview();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      };
+
+      const validateRequiredGroups = (step) => {
+        const groupNames = new Set(
+          Array.from(step.querySelectorAll("[data-required-group]:not(:disabled)"))
+            .map((control) => control.dataset.requiredGroup)
+        );
+        for (const name of groupNames) {
+          const controls = Array.from(
+            step.querySelectorAll(`input[name="${CSS.escape(name)}"]:not(:disabled)`)
+          );
+          if (!controls.length) continue;
+          const valid = controls.some((control) => control.checked);
+          controls.forEach((control) => control.setCustomValidity(""));
+          if (!valid) {
+            controls[0].setCustomValidity("Select at least one option.");
+            controls[0].reportValidity();
+            return false;
+          }
+        }
+        return true;
+      };
+
+      const validateStep = () => {
+        updateConditionals();
+        const step = steps[currentStep];
+        const controls = Array.from(step.querySelectorAll("input, select, textarea")).filter((control) => !control.disabled);
+        if (!validateRequiredGroups(step)) return false;
+        for (const control of controls) {
+          if (!control.checkValidity()) {
+            control.reportValidity();
+            const status = step.querySelector(".status");
+            if (status) status.textContent = "Complete the required fields before continuing.";
+            return false;
+          }
+        }
+        const status = step.querySelector(".status");
+        if (status) status.textContent = "";
+        return true;
+      };
+
+      const sectionForControl = (control) => {
+        const step = control.closest(".step");
+        return step ? step.dataset.title : "Other";
+      };
+
+      const labelForControl = (control) => {
+        const explicit = control.id ? document.querySelector(`label[for="${CSS.escape(control.id)}"]`) : null;
+        if (explicit) return explicit.textContent.replace(/\s*\*\s*$/, "").trim();
+        const fieldset = control.closest("fieldset");
+        const legend = fieldset ? fieldset.querySelector("legend") : null;
+        if (legend) return legend.textContent.replace(/\s*\*\s*$/, "").trim();
+        return control.name.replaceAll("_", " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
+      };
+
+      const collectResponses = () => {
+        const response = {};
+        Array.from(form.elements).forEach((control) => {
+          if (!control.name || control.disabled || ["button", "submit", "hidden"].includes(control.type)) return;
+          let values = [];
+          if (control.type === "file") {
+            values = Array.from(control.files || []).map((file) => file.name);
+          } else if (control.type === "checkbox" || control.type === "radio") {
+            if (!control.checked) return;
+            values = [control.value];
+          } else if (control.value.trim()) {
+            values = [control.value.trim()];
+          }
+          if (!values.length) return;
+          const section = sectionForControl(control);
+          if (!response[section]) response[section] = {};
+          const label = labelForControl(control);
+          if (!response[section][label]) response[section][label] = [];
+          response[section][label].push(...values);
+        });
+        return response;
+      };
+
+      const buildReview = () => {
+        const response = collectResponses();
+        reviewList.innerHTML = "";
+        Object.entries(response).forEach(([section, fields]) => {
+          const card = document.createElement("article");
+          card.className = "review-card";
+          const title = document.createElement("h3");
+          title.textContent = section;
+          card.appendChild(title);
+          Object.entries(fields).forEach(([label, values]) => {
+            const row = document.createElement("div");
+            row.className = "review-row";
+            const key = document.createElement("div");
+            key.className = "review-key";
+            key.textContent = label;
+            const value = document.createElement("div");
+            value.className = "review-value";
+            value.textContent = values.join("; ");
+            row.append(key, value);
+            card.appendChild(row);
+          });
+          reviewList.appendChild(card);
+        });
+      };
+
+      const downloadJson = () => {
+        const payload = {
+          exportedAt: new Date().toISOString(),
+          form: "MatrAIx Study Intake",
+          responses: collectResponses()
+        };
+        const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+        const link = document.createElement("a");
+        const study = (form.elements.study_name.value || "study").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+        link.href = URL.createObjectURL(blob);
+        link.download = `matraix-intake-${study || "study"}.json`;
+        link.click();
+        URL.revokeObjectURL(link.href);
+      };
+
+      form.addEventListener("change", (event) => {
+        if (event.target.matches("input, select")) updateConditionals();
+      });
+
+      document.querySelectorAll(".next").forEach((button) => {
+        button.addEventListener("click", () => {
+          if (validateStep()) showStep(currentStep + 1);
+        });
+      });
+
+      document.querySelectorAll(".back").forEach((button) => {
+        button.addEventListener("click", () => showStep(currentStep - 1));
+      });
+
+      document.getElementById("download-json").addEventListener("click", downloadJson);
+      document.getElementById("print-review").addEventListener("click", () => window.print());
+
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        buildReview();
+        successPanel.classList.add("visible");
+        successPanel.scrollIntoView({ behavior: "smooth", block: "center" });
+      });
+
+      updateConditionals();
+      showStep(0);
+    })();
+  </script>
+</body>
+</html>

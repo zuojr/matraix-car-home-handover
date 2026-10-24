@@ -1,0 +1,92 @@
+services:
+  main:
+    build:
+      context: .
+    networks:
+    - dialogue
+    depends_on:
+      assistant:
+        condition: service_healthy
+  assistant:
+    build:
+      context: ./runtime
+    command:
+    - uvicorn
+    - matraix.journeys.chat:factory
+    - --factory
+    - --host
+    - 0.0.0.0
+    - --port
+    - '8000'
+    environment:
+      JOURNEY_MODE: ${JOURNEY_MODE:-reference}
+      JOURNEY_CONTROL_TOKEN: ${JOURNEY_CONTROL_TOKEN:?Set a unique local private control
+        token}
+      JOURNEY_SIMULATOR_URL: http://simulator:8001
+      JOURNEY_API_RECORDS: /api-records
+      JOURNEY_SUT_BASE_URL: ${JOURNEY_SUT_BASE_URL:-}
+      JOURNEY_SUT_MODEL: ${JOURNEY_SUT_MODEL:-}
+      JOURNEY_SUT_API_KEY: ${JOURNEY_SUT_API_KEY:-}
+      JOURNEY_SUT_OPTIONS_JSON: ${JOURNEY_SUT_OPTIONS_JSON:-}
+      JOURNEY_SUT_TIMEOUT: ${JOURNEY_SUT_TIMEOUT:-120}
+      JOURNEY_SUT_MAX_TOKENS: ${JOURNEY_SUT_MAX_TOKENS:-4096}
+      JOURNEY_MAX_SUT_CALLS: ${JOURNEY_MAX_SUT_CALLS:-160}
+    networks:
+    - dialogue
+    - control
+    expose:
+    - '8000'
+    healthcheck:
+      test:
+      - CMD
+      - python
+      - -c
+      - import urllib.request; urllib.request.urlopen('http://localhost:8000/health',
+        timeout=5).read()
+      interval: 5s
+      timeout: 10s
+      retries: 30
+      start_period: 30s
+    depends_on:
+      simulator:
+        condition: service_healthy
+  simulator:
+    build:
+      context: ./runtime
+    command:
+    - uvicorn
+    - matraix.journeys.simulator:factory
+    - --factory
+    - --host
+    - 0.0.0.0
+    - --port
+    - '8001'
+    environment:
+      JOURNEY_MODE: ${JOURNEY_MODE:-reference}
+      JOURNEY_CONTROL_TOKEN: ${JOURNEY_CONTROL_TOKEN:?Set a unique local private control
+        token}
+      JOURNEY_PLAN_PATH: /plan
+      JOURNEY_RECORDS: /records
+      JOURNEY_MAX_WORKERS: '2'
+      JOURNEY_SCENARIO_ID: ${JOURNEY_SCENARIO_ID:-}
+    volumes:
+    - ./plan:/plan:ro
+    networks:
+    - control
+    expose:
+    - '8001'
+    healthcheck:
+      test:
+      - CMD
+      - python
+      - -c
+      - import urllib.request; urllib.request.urlopen('http://localhost:8001/health',
+        timeout=5).read()
+      interval: 5s
+      timeout: 10s
+      retries: 30
+      start_period: 30s
+networks:
+  dialogue: {}
+  control:
+    internal: true

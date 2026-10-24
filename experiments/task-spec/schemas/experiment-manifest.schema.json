@@ -1,0 +1,132 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://matraix.dev/experiments/experiment-manifest.schema.json",
+  "title": "ExperimentRunManifest",
+  "description": "A single experiment RUN (not the task). Produced by the experiment layer (UI or CLI/API alike) from a task's experiment.json plus a chosen design + persona cohort. Persisted at experiments/runs/<experimentId>/manifest.json. This is where persona factors live (they are a run-level design decision, not a task property).",
+  "type": "object",
+  "required": ["schemaVersion", "experimentId", "task", "design", "cells"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "experimentId": { "type": "string", "minLength": 1 },
+    "name": { "type": "string" },
+    "task": {
+      "type": "string",
+      "description": "Repo-relative path to the experiment task dir (holds experiment.json)."
+    },
+    "appType": { "type": "string", "enum": ["web", "os-app", "chatbot", "survey"] },
+    "createdAt": { "type": "string" },
+    "status": {
+      "type": "string",
+      "enum": ["designing", "launching", "running", "complete", "error"],
+      "default": "designing"
+    },
+    "design": {
+      "type": "object",
+      "required": ["type"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "type": "string", "enum": ["ab_n", "full_factorial", "fractional"] },
+        "sutFactors": {
+          "type": "array",
+          "description": "Which task factor ids participate. Omitted/empty = all factors in experiment.json.",
+          "items": { "type": "string" }
+        },
+        "effectiveType": {
+          "type": "string",
+          "enum": ["ab_n", "full_factorial", "fractional"],
+          "description": "What the engine actually used (fractional may fall back to full when no orthogonal array fits)."
+        }
+      }
+    },
+    "personaFactor": {
+      "type": "object",
+      "description": "Optional persona dimension of the design. Absent = single shared cohort with no persona contrast.",
+      "additionalProperties": false,
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": ["shared_cohort", "contrast"],
+          "description": "shared_cohort: one cohort runs every SUT arm (persona is a covariate). contrast: persona base vs clone(s) is itself a factor."
+        },
+        "paired": {
+          "type": "boolean",
+          "default": true,
+          "description": "Reuse the same personas (by personaId / pair_id) across arms for within-subject comparison."
+        },
+        "cohort": {
+          "type": "object",
+          "description": "Base cohort definition (mirrors persona_strategy.json fields), or a $ref to the task's persona_strategy.json.",
+          "additionalProperties": true
+        },
+        "levels": {
+          "type": "array",
+          "description": "contrast mode only: the persona arms (base + contrast clones).",
+          "items": {
+            "type": "object",
+            "required": ["id"],
+            "additionalProperties": false,
+            "properties": {
+              "id": { "type": "string" },
+              "label": { "type": "string" },
+              "baseline": { "type": "boolean", "default": false },
+              "pool": { "type": "string", "description": "Resolved persona pool path for this arm." },
+              "contrast": { "type": "object", "additionalProperties": true }
+            }
+          }
+        }
+      }
+    },
+    "sampling": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "perArm": { "type": "integer", "minimum": 1 },
+        "seed": { "type": "integer" },
+        "personaIds": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "The resolved shared cohort persona ids (pinned so every arm runs the same personas)."
+        },
+        "personaPool": { "type": "string" }
+      }
+    },
+    "metricContract": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "primary": { "type": "array", "items": { "type": "string" } },
+        "secondary": { "type": "array", "items": { "type": "string" } },
+        "guardrail": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "cells": {
+      "type": "array",
+      "description": "The expanded design: one entry per experiment arm/cell. Each maps to one Harbor job (job-level env carries that cell's params).",
+      "items": {
+        "type": "object",
+        "required": ["cellId", "factorLevels"],
+        "additionalProperties": false,
+        "properties": {
+          "cellId": { "type": "string" },
+          "arm": { "type": "string", "description": "Human-readable arm label." },
+          "baseline": { "type": "boolean", "default": false },
+          "factorLevels": {
+            "type": "object",
+            "description": "factorId -> levelId for this cell.",
+            "additionalProperties": { "type": "string" }
+          },
+          "params": {
+            "type": "object",
+            "description": "Merged stimulus params for this cell (injected as MATRIX_PARAM_*).",
+            "additionalProperties": { "type": ["string", "number", "boolean"] }
+          },
+          "personaArm": { "type": "string", "description": "contrast mode: which persona level this cell uses." },
+          "personaPool": { "type": "string" },
+          "jobName": { "type": "string", "description": "Harbor job name, filled after launch." },
+          "status": { "type": "string" }
+        }
+      }
+    }
+  }
+}

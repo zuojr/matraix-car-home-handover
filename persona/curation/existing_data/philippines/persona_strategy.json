@@ -1,0 +1,27 @@
+{
+  "schemaVersion": "1.0",
+  "sources": [],
+  "dimensionFilters": {
+    "region": ["Southeast Asia"],
+    "cult_philippines": ["Native"],
+    "lang_tagalog": ["Native", "Fluent"],
+    "age_bracket": [
+      "18-24",
+      "25-34",
+      "35-44",
+      "45-54",
+      "55-64",
+      "65-74",
+      "75-84",
+      "85+"
+    ],
+    "urbanicity": ["Dense urban", "Suburban", "Small town", "Rural"],
+    "gender_identity": ["Woman", "Man"]
+  },
+  "sampling": {
+    "mode": "stratified",
+    "fields": ["age_bracket", "urbanicity", "gender_identity"],
+    "allocation": "equalTotal",
+    "sampleSize": 256
+  }
+}

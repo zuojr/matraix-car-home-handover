@@ -1,0 +1,78 @@
+{
+  "scope": "philippines_population",
+  "status": "partial",
+  "notes": "Shares are the true population shares for each category, so a dimension only sums to 1.0 when every schema category is identifiable in the source. Where it does not, the remainder is population that PSA cannot place into a schema category (see per-dimension coverage). calibration.py normalizes each margin over the codes actually supplied (rake_weights, calibration.py:22,41-48), so a partial margin calibrates the correct conditional distribution rather than silently skewing. highest_education is still empty and must not be calibrated against — it needs the CPH person PUF.",
+  "base_population": {
+    "household_population_2020": 108667043,
+    "total_population_2020": 109035343,
+    "note": "PSA reports most CPH cross-tabulations on the household population (99.7% of total). Age, sex and religion shares below use the household base; the urban/rural split is published on the total base. The two bases differ by 0.34%, which is below the resolution of these targets."
+  },
+  "sources": {
+    "cph_age_sex": "PSA 2020 Census of Population and Housing, 'Population by Age Group, Sex, Region, and Province/Highly Urbanized City' — OpenStat PX-Web table 0031A6DPAG0.px (DB/1A/PO_2020), retrieved 2026-08-14. Reconciles to the published 108,667,043 household population exactly.",
+    "wpp_single_age": "UN World Population Prospects 2024, WPP2024_PopulationBySingleAgeSex_Medium_1950-2023, Philippines 2020 — used only to split CPH's 5-year bands at the schema boundaries (10-14 -> 10-12/13-14, 15-19 -> 15-17/18-19, 80+ -> 80-84/85+).",
+    "cph_urban_rural": "PSA, 'Urban Population of the Philippines (2020 CPH)': 58.93M urban (54.0%) / 50.10M rural (46.0%).",
+    "cph_religion": "PSA, 'Religious Affiliation in the Philippines (2020 CPH)', 27 Jan 2023. Full denominational table reconciles to 108,667,043 exactly; Roman Catholic 85,645,362 (78.8%), Islam 6,981,710 (6.4%) and Iglesia ni Cristo 2,806,524 (2.6%) match the press release directly."
+  },
+  "dimensions": {
+    "age_bracket": {
+      "weight": 1.0,
+      "quality": "high",
+      "reference": "PSA 2020 CPH 5-year age groups; UN WPP 2024 Philippines for the within-band splits at 13, 18 and 85",
+      "coverage": "complete — brackets reconstruct the full 108,667,043 household population",
+      "shares": {
+        "Under 5": 0.10184,
+        "5-12": 0.16577,
+        "13-17": 0.09772,
+        "18-24": 0.13016,
+        "25-34": 0.15914,
+        "35-44": 0.1258,
+        "45-54": 0.09674,
+        "55-64": 0.06894,
+        "65-74": 0.03652,
+        "75-84": 0.01442,
+        "85+": 0.00294
+      }
+    },
+    "gender_identity": {
+      "weight": 0.5,
+      "quality": "high",
+      "reference": "PSA 2020 CPH sex of household population (55,017,643 male / 53,649,400 female)",
+      "coverage": "Census sex only. Non-binary / Self-described are not enumerable from a census sex item and are deliberately absent rather than set to zero — do not read their absence as a measured share of 0.",
+      "shares": {
+        "Man": 0.5063,
+        "Woman": 0.4937
+      }
+    },
+    "urbanicity": {
+      "weight": 0.5,
+      "quality": "pending_derivation",
+      "reference": "PSA 2020 CPH urban/rural barangay classification; derive from the CPH PUF",
+      "coverage": "DELIBERATELY EMPTY — calibration skips a margin whose shares sum to 0 (calibration.py:40), which is the safe state here. psa_ph.py now emits four values (Dense urban / Suburban / Small town / Rural) using HUC and commuter-belt locality on top of PSA's binary urban flag. A target naming only some of them would NOT be conservative: rake_weights divides by the sum of the codes supplied while counting every observed row in the denominator, so the omitted categories would skew the ones present. The four-way split cannot be built from public aggregates (PSA publishes urban share nationally and by region, not the urban population of each HUC and commuter-belt province), so derive it from the census PUF itself: scripts/derive_targets_ph.py --dims urbanicity.",
+      "shares": {},
+      "reference_only_two_category_split": {
+        "note": "Superseded — kept for provenance. Correct only for the older crosswalk that emitted just these two values, and NOT consumed by calibration.",
+        "Dense urban": 0.12335,
+        "Rural": 0.46
+      }
+    },
+    "highest_education": {
+      "weight": 0.5,
+      "quality": "unset",
+      "reference": "PSA CPH highest grade completed / FLEMMS",
+      "coverage": "BLOCKED — no public aggregate. PSA publishes no educational-attainment table on OpenStat, and psa.gov.ph press-release pages are not machine-retrievable from this environment. Fill from the CPH 2020 person PUF (HGC) once it is on disk, or transcribe the PSA educational-attainment release by hand. Do not calibrate against this dimension until then.",
+      "shares": {}
+    },
+    "demo_religion_affiliation": {
+      "weight": 0.5,
+      "quality": "high",
+      "reference": "PSA 2020 CPH religious affiliation",
+      "coverage": "Christian aggregates Roman Catholic, Evangelical (PCEC), Protestant (NCCP), Iglesia ni Cristo, Seventh-day Adventist, Jehovah's Witnesses, Church of Christ, Jesus Is Lord and Latter-day Saints, matching how psa_ph.py collapses these labels. Folk / traditional is CPH 'Tribal religion' (251,548). The missing 2.24% is 'other religious affiliations' (2.23%) and not-reported (0.01%). No separate Buddhist or Hindu line is published; both fall inside 'other', so they are not set here.",
+      "shares": {
+        "Christian": 0.91061,
+        "Muslim": 0.06425,
+        "Folk / traditional": 0.00231,
+        "None": 0.0004
+      }
+    }
+  }
+}

@@ -1,0 +1,46 @@
+# The `main` service (persona agent + Playwright) is auto-configured by Harbor
+# from the [environment].definition image. Here we only add the two landing-page
+# sidecars and make `main` wait for them.
+#
+# Each arm of the experiment points {{ target_url }} at one of these services:
+#   variant A -> http://web-a
+#   variant B -> http://web-b
+# Both are always up; a trial's persona only visits its arm's URL. The signup
+# CTA hits `/signup`, which each nginx records in a per-service log file
+# (/var/log/site/web-a.access.log, /var/log/site/web-b.access.log) — each is
+# collected as a trial artifact (objective conversion evidence).
+services:
+  main:
+    depends_on:
+      web-a:
+        condition: service_healthy
+      web-b:
+        condition: service_healthy
+
+  web-a:
+    build:
+      context: ./web-a
+    expose:
+      - "80"
+    healthcheck:
+      # Use 127.0.0.1, not localhost: busybox wget resolves localhost to ::1
+      # first, but nginx listens on IPv4 only, so localhost fails the check.
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1/"]
+      interval: 2s
+      timeout: 5s
+      retries: 15
+      start_period: 3s
+
+  web-b:
+    build:
+      context: ./web-b
+    expose:
+      - "80"
+    healthcheck:
+      # Use 127.0.0.1, not localhost: busybox wget resolves localhost to ::1
+      # first, but nginx listens on IPv4 only, so localhost fails the check.
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1/"]
+      interval: 2s
+      timeout: 5s
+      retries: 15
+      start_period: 3s

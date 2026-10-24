@@ -1,0 +1,20 @@
+{
+  "schemaVersion": "1.0",
+  "sources": [],
+  "dimensionFilters": {
+    "domain": [
+      "Software & AI",
+      "Engineering",
+      "Education",
+      "Natural Sciences"
+    ],
+    "economic_motivation": [
+      "Cost-sensitive",
+      "Value-driven"
+    ]
+  },
+  "sampling": {
+    "mode": "random",
+    "sampleSize": 6
+  }
+}

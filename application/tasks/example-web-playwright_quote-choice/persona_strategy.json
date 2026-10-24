@@ -1,0 +1,28 @@
+{
+  "schemaVersion": "1.0",
+  "sources": [],
+  "dimensionFilters": {
+    "values_priority": [
+      "Autonomy",
+      "Achievement",
+      "Security",
+      "Community",
+      "Tradition",
+      "Novelty"
+    ],
+    "age_bracket": [
+      "18-24",
+      "25-34",
+      "35-44"
+    ]
+  },
+  "sampling": {
+    "mode": "stratified",
+    "fields": [
+      "values_priority",
+      "age_bracket"
+    ],
+    "allocation": "perCell",
+    "perCell": 1
+  }
+}

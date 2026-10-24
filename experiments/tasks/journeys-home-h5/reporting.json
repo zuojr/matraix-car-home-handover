@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "1.0",
+  "contextRules": [
+    {
+      "match": {
+        "contextType": "task_outcome"
+      },
+      "distributions": [
+        {
+          "id": "journey.success",
+          "facetKey": "programmatic_task_success",
+          "title": "Programmatic task success",
+          "groupByPersonaDimensions": [
+            "trust_level",
+            "age_bracket"
+          ]
+        }
+      ]
+    }
+  ]
+}

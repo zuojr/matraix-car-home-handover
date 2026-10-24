@@ -1,0 +1,12 @@
+{
+  "id": "wvs_wave7_philippines",
+  "source": {
+    "type": "official_survey_reference",
+    "url": "https://www.worldvaluessurvey.org/WVSDocumentationWV7.jsp"
+  },
+  "dimensions_claimed": 153,
+  "format": "questionnaire_reference",
+  "license": "official-survey-terms",
+  "gated": true,
+  "notes": "World Values Survey Wave 7 Philippines subset (B_COUNTRY_ALPHA=PHL / B_COUNTRY=608). Download the official microdata under WVS terms, keep only PH respondents, then run persona/curation/existing_data/scripts/crosswalks/wvs_ph.py via run_pipeline.py --observed-only. Do not scrape or redistribute the .dta/.sav."
+}

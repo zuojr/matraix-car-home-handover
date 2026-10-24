@@ -1,0 +1,170 @@
+name: Car Home journey sidecars (no model calls)
+permissions:
+  contents: read
+jobs:
+  native-and-container-reference:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+    - uses: actions/checkout@v6
+    - uses: actions/setup-python@v6
+      with:
+        python-version: '3.13'
+    - name: Install and pin native source
+      run: 'pip install -e ''.[journeys]'' pytest pytest-asyncio ruff==0.15.20
+
+        git clone https://github.com/holi-lab/SimuHome /tmp/SimuHome
+
+        git -C /tmp/SimuHome checkout --detach 83d28837b69f0cbf1bc02ed5334cb8b561a9d54d
+
+        '
+    - name: Offline native and integration tests
+      env:
+        SIMUHOME_ROOT: /tmp/SimuHome
+        PYTHONPATH: src:environment/runtime:environment/agents
+      run: 'python -m pytest tests/unit/matraix/test_journeys_*.py -q
+
+        python -m pytest tests/unit/matraix/test_job_results.py tests/unit/matraix/test_job_run.py tests/unit/matraix/test_experiment_cli.py
+        tests/unit/application/test_generate_application_job.py tests/unit/playground_core/test_application_job.py
+        -q
+
+        python -m ruff check src/matraix/journeys scripts/journey_recovery.py scripts/check_journey_setup.py tests/unit/matraix/test_journeys_*.py
+
+        python -m pytest tests/environment/test_application_task_contracts.py -k journeys -q
+
+        python -m pytest tests/environment/test_persona_agents.py -q
+
+        python -m matraix.journeys materialize --repo .
+
+        '
+    - name: Build shared main and isolated sidecars, then check reference HTTP and network isolation
+      env:
+        JOURNEY_CONTROL_TOKEN: ci-reference-only-local-token
+        JOURNEY_MODE: reference
+        COMPOSE_FILE: /tmp/journey-compose/docker-compose.yaml:/tmp/journey-compose/ci-main-override.yaml
+      run: 'python -c ''from pathlib import Path; from harbor.environments.compose_materialize import materialize_persona_with_local_compose;
+        materialize_persona_with_local_compose(persona_dir=Path("environment/task-environments/application/shared-chat-persona"),local_compose_dir=Path("environment/task-environments/application/chatbot-api-sidecar_journeys"),dest_dir=Path("/tmp/journey-compose"))''
+
+        printf ''services:\n  main:\n    command: ["sleep", "infinity"]\n'' > /tmp/journey-compose/ci-main-override.yaml
+
+        docker compose up -d --build --wait
+
+        docker compose exec -T main python3 -c ''import json,urllib.request; body=json.dumps({"message":"{\"act\":\"continue\"}","applicationContext":"car-4-main-C1"}).encode();
+        r=urllib.request.urlopen(urllib.request.Request("http://assistant:8000/v1/messages",data=body,headers={"Content-Type":"application/json"}),timeout=180);
+        assert json.load(r)["terminal"]''
+
+        docker compose exec -T main python3 -c ''import json,urllib.request; body=json.dumps({"message":"{\"act\":\"continue\"}","applicationContext":"home-6-boundary-C1"}).encode();
+        r=urllib.request.urlopen(urllib.request.Request("http://assistant:8000/v1/messages",data=body,headers={"Content-Type":"application/json"}),timeout=180);
+        assert json.load(r)["terminal"]''
+
+        docker compose exec -T main python3 -c ''import os,socket; assert not os.getenv("JOURNEY_CONTROL_TOKEN")
+        and not os.getenv("JOURNEY_SUT_API_KEY"); exec("try:\n socket.create_connection((\"simulator\",8001),timeout=2)\nexcept
+        OSError:\n pass\nelse:\n raise AssertionError(\"private simulator reachable from persona main\")")''
+
+        docker compose exec -T simulator python -m matraix.journeys.verify --records /records --out /verification
+
+        mkdir -p /tmp/journey-ci-artifacts
+
+        docker compose cp simulator:/verification /tmp/journey-ci-artifacts/verification
+
+        docker compose images --format json > /tmp/journey-ci-artifacts/container-images.json
+
+        '
+    - name: Save container diagnostics
+      if: always()
+      env:
+        JOURNEY_CONTROL_TOKEN: ci-reference-only-local-token
+        COMPOSE_FILE: /tmp/journey-compose/docker-compose.yaml:/tmp/journey-compose/ci-main-override.yaml
+      run: 'mkdir -p /tmp/journey-ci-artifacts
+
+        docker compose logs --no-color > /tmp/journey-ci-artifacts/container-logs.txt 2>&1 || true
+
+        '
+    - name: Stop containers
+      if: always()
+      env:
+        JOURNEY_CONTROL_TOKEN: ci-reference-only-local-token
+        COMPOSE_FILE: /tmp/journey-compose/docker-compose.yaml:/tmp/journey-compose/ci-main-override.yaml
+      run: "if [ -f /tmp/journey-compose/docker-compose.yaml ]; then\n  docker compose down --volumes --remove-orphans\n\
+        fi\n"
+    - uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: journey-reference-verification
+        path: /tmp/journey-ci-artifacts/verification/structured_output.json
+        if-no-files-found: ignore
+  official-harbor-eight-arm-acceptance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+    - uses: actions/checkout@v6
+    - uses: actions/setup-python@v6
+      with:
+        python-version: '3.13'
+    - name: Clean installation (no credentials or model services)
+      run: 'python -m venv .venv
+
+        .venv/bin/python -m pip install -e ''.[journeys]'' pytest pytest-asyncio
+
+        '
+    - name: Official ExperimentService to real Harbor jobs and sidecars
+      run: .venv/bin/python scripts/validate_journey_harbor.py
+    - name: Save native acceptance evidence and failure diagnostics
+      if: always()
+      run: 'mkdir -p journey-runs/native-acceptance/diagnostics
+
+        docker ps -a > journey-runs/native-acceptance/diagnostics/docker-ps.txt
+
+        docker images > journey-runs/native-acceptance/diagnostics/docker-images.txt
+
+        '
+    - uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: journey-official-harbor-acceptance
+        path: journey-runs/native-acceptance/ACCEPTANCE.json
+        if-no-files-found: warn
+'on':
+  push:
+    branches:
+    - main
+    paths:
+    - src/matraix/journeys/**
+    - src/matraix/application_job.py
+    - src/matraix/experiment_cli.py
+    - experiments/tasks/journeys-*/**
+    - application/playground/backend/service/harbor_job_service.py
+    - application/playground/backend/service/report_pdf.py
+    - scripts/validate_journey_harbor.py
+    - tests/helpers/journey_native_stub.py
+    - application/tasks/chat_journeys-*/**
+    - environment/task-environments/application/chatbot-api-sidecar_journeys/**
+    - environment/agents/matraix/agents/persona/**
+    - configs/journeys/**
+    - scripts/run_journeys.ps1
+    - scripts/journey_recovery.py
+    - scripts/check_journey_setup.py
+    - docs/journeys/**
+    - tests/unit/matraix/test_journeys_*.py
+    - tests/helpers/journey_api_stub.py
+    - pyproject.toml
+    - uv.lock
+    - .github/workflows/journey-sidecars.yml
+  pull_request:
+    paths:
+    - src/matraix/application_job.py
+    - src/matraix/experiment_cli.py
+    - experiments/tasks/journeys-*/**
+    - application/playground/backend/service/harbor_job_service.py
+    - application/playground/backend/service/report_pdf.py
+    - scripts/validate_journey_harbor.py
+    - tests/helpers/journey_native_stub.py
+    - scripts/journey_recovery.py
+    - scripts/check_journey_setup.py
+    - docs/journeys/**
+    - src/matraix/journeys/**
+    - application/tasks/chat_journeys-*/**
+    - environment/task-environments/application/chatbot-api-sidecar_journeys/**
+    - tests/unit/matraix/test_journeys_*.py
+    - .github/workflows/journey-sidecars.yml
+  workflow_dispatch: null

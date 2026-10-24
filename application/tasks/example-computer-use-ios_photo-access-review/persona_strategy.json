@@ -1,0 +1,23 @@
+{
+  "schemaVersion": "1.0",
+  "sources": [],
+  "dimensionFilters": {
+    "values_priority": [
+      "Security",
+      "Autonomy"
+    ],
+    "tech_savviness": [
+      "Digital native",
+      "Comfortable",
+      "Cautious adopter"
+    ]
+  },
+  "sampling": {
+    "mode": "stratified",
+    "fields": [
+      "tech_savviness"
+    ],
+    "allocation": "equalTotal",
+    "sampleSize": 6
+  }
+}

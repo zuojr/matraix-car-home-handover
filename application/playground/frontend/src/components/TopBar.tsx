@@ -1,0 +1,148 @@
+/**
+ * TopBar: MatrAIx application header.
+ *
+ * Nav (centered pill): Persona World · Task Gallery · Playground · Experiments · Runs.
+ * The MatrAIx logo is the home entry; click it to return to the landing stage.
+ */
+import { PreflightChip } from "./PreflightChip";
+import { LocalePopover } from "./LocalePopover";
+import { FOCUS_RING, Sym } from "./cockpit/cockpitShared";
+import { MatrAIxLogo } from "./studio/MatrAIxLogo";
+import { useTheme } from "@/hooks/useTheme";
+import { useI18n } from "@/i18n/I18nProvider";
+
+export type StudioMode = "home" | "playground";
+
+export interface TopBarProps {
+  mode: StudioMode;
+  onModeChange: (mode: StudioMode) => void;
+  runsActive: boolean;
+  galleryActive: boolean;
+  storeActive: boolean;
+  experimentsActive: boolean;
+  onOpenHome: () => void;
+  onOpenRuns: () => void;
+  onOpenTaskGallery: () => void;
+  onOpenPersonaStore: () => void;
+  onOpenExperiments: () => void;
+  /** "glass" floats over the Home stage as a NASA-panel frosted bar. */
+  variant?: "solid" | "glass";
+}
+
+export function TopBar({
+  mode,
+  onModeChange,
+  runsActive,
+  galleryActive,
+  storeActive,
+  experimentsActive,
+  onOpenHome,
+  onOpenRuns,
+  onOpenTaskGallery,
+  onOpenPersonaStore,
+  onOpenExperiments,
+  variant = "solid",
+}: TopBarProps) {
+  const { theme, toggle } = useTheme();
+  const { t } = useI18n();
+  const nextIsLight = theme === "dark";
+  const overlayActive = runsActive || galleryActive || storeActive || experimentsActive;
+
+  const nav: Array<{
+    key: string;
+    label: string;
+    active: boolean;
+    onClick: () => void;
+  }> = [
+    {
+      key: "store",
+      label: t("shell.nav.personaWorld"),
+      active: storeActive,
+      onClick: onOpenPersonaStore,
+    },
+    {
+      key: "gallery",
+      label: t("shell.nav.taskGallery"),
+      active: galleryActive,
+      onClick: onOpenTaskGallery,
+    },
+    {
+      key: "playground",
+      label: t("shell.nav.playground"),
+      active: mode === "playground" && !overlayActive,
+      onClick: () => onModeChange("playground"),
+    },
+    {
+      key: "experiments",
+      label: t("shell.nav.experiments"),
+      active: experimentsActive,
+      onClick: onOpenExperiments,
+    },
+    {
+      key: "runs",
+      label: t("shell.nav.runs"),
+      active: runsActive,
+      onClick: onOpenRuns,
+    },
+  ];
+
+  const glass = variant === "glass";
+
+  return (
+    <header
+      className={`nasa-glass-bar z-20 flex-shrink-0 ${
+        glass ? "absolute inset-x-0 top-0" : "relative"
+      }`}
+    >
+      <div className="grid h-14 grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3 px-5">
+        <div className="flex min-w-0 items-center justify-start">
+          <MatrAIxLogo size="md" onClick={onOpenHome} />
+        </div>
+
+        <nav
+          className="nasa-glass-pill hidden items-center rounded-full p-1 backdrop-blur md:flex"
+          aria-label={t("shell.nav.application")}
+        >
+          <div className="grid grid-cols-5 items-center">
+            {nav.map(({ key, label, active, onClick }) => (
+              <button
+                key={key}
+                type="button"
+                onClick={onClick}
+                aria-current={active ? "page" : undefined}
+                title={label}
+                className={`flex h-9 min-w-[6.25rem] items-center justify-center rounded-full px-3 text-[13px] font-semibold tracking-[-0.01em] transition ${FOCUS_RING} ${
+                  active
+                    ? "bg-primary text-on-primary shadow-sm"
+                    : "text-text-variant hover:bg-surface-high/70 hover:text-text-main"
+                }`}
+              >
+                <span className="truncate">{label}</span>
+              </button>
+            ))}
+          </div>
+        </nav>
+
+        <div className="flex flex-shrink-0 items-center justify-end gap-2.5">
+          <PreflightChip />
+
+          <LocalePopover />
+
+          <button
+            type="button"
+            onClick={toggle}
+            aria-label={
+              nextIsLight
+                ? t("shell.theme.switchToLight")
+                : t("shell.theme.switchToDark")
+            }
+            title={t("shell.theme.toggle")}
+            className={`nasa-glass-pill grid h-9 w-9 flex-none place-items-center rounded-full text-text-variant transition hover:bg-surface-high/40 hover:text-text-main active:scale-95 ${FOCUS_RING}`}
+          >
+            <Sym name={nextIsLight ? "light_mode" : "dark_mode"} size={18} />
+          </button>
+        </div>
+      </div>
+    </header>
+  );
+}

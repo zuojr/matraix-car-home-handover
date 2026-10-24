@@ -1,0 +1,35 @@
+{
+  "schemaVersion": "1.0",
+  "sources": [],
+  "dimensionFilters": {
+    "age_bracket": [
+      "18-24",
+      "25-34",
+      "35-44",
+      "45-54",
+      "55-64",
+      "65+"
+    ],
+    "health_insurance_status": [
+      "Comprehensive",
+      "Basic",
+      "Minimal",
+      "Uninsured"
+    ],
+    "health_general_health": [
+      "Excellent",
+      "Good",
+      "Fair",
+      "Poor"
+    ]
+  },
+  "sampling": {
+    "mode": "stratified",
+    "fields": [
+      "age_bracket",
+      "health_insurance_status"
+    ],
+    "allocation": "equalTotal",
+    "sampleSize": 20
+  }
+}

@@ -1,0 +1,67 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://matraix.dev/experiments/factor.schema.json",
+  "title": "ExperimentFactor",
+  "description": "One factorable variable of an experiment task, with its discrete levels. A factor with multiple levels varies and expands cells; the baseline level is the control/reference for lift.",
+  "type": "object",
+  "required": ["id", "levels"],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]{0,63}$",
+      "description": "Stable factor id, snake_case. Each level's value is injected as MATRIX_PARAM_<ID>."
+    },
+    "label": { "type": "string" },
+    "description": { "type": "string" },
+    "space": {
+      "type": "string",
+      "enum": ["system", "persona"],
+      "default": "system",
+      "description": "Which space this factor lives in. system = product/environment stimulus (randomizable, real experiment). persona = a subject attribute (classification/blocking factor; cannot be randomly assigned). For compareBy=persona the contrast factor is space=persona."
+    },
+    "source": {
+      "type": "string",
+      "enum": ["stimulus", "catalog", "overlay"],
+      "default": "stimulus",
+      "description": "Where levels come from. stimulus = environment inputs (URLs, framing, variants). catalog = values of a persona dimension in the persona schema. overlay = a cohort-scoped custom persona dimension."
+    },
+    "baseline": {
+      "type": "string",
+      "description": "Level id that is the control/reference for lift. Defaults to the first level when omitted."
+    },
+    "levels": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/definitions/level" }
+    }
+  },
+  "definitions": {
+    "level": {
+      "type": "object",
+      "required": ["id"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$"
+        },
+        "label": { "type": "string" },
+        "value": {
+          "type": ["string", "number", "boolean"],
+          "description": "The single stimulus value for this level, keyed by the factor id (injected as MATRIX_PARAM_<FACTOR_ID>). For space=persona catalog factors this is the persona dimension value that defines the arm."
+        },
+        "params": {
+          "type": "object",
+          "description": "OPTIONAL multi-key stimulus values, when a level needs to set more than the single factor-id value. Merged into the cell params. Prefer value for the common single-value case.",
+          "additionalProperties": { "type": ["string", "number", "boolean"] }
+        },
+        "expected": {
+          "type": "object",
+          "description": "OPTIONAL per-level correctness ground truth. Omit for behavioral experiments (the default). Only present when a level has an objectively-correct answer to check; shape validated by expected.schema.json.",
+          "additionalProperties": true
+        }
+      }
+    }
+  }
+}

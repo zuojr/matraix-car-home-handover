@@ -1,0 +1,38 @@
+artifactName: user_feedback.json
+instructions: |
+  Reflect honestly after deciding whether to sign up. Base your answers on the
+  landing page you saw, how the product was framed, and how confident you feel
+  about your decision to sign up or to leave.
+fields:
+  - key: needConstraintSatisfaction
+    prompt: How well did the product, as presented, seem to satisfy your practical needs or constraints?
+    kind: enum
+    choices: ["yes", "partially", "no"]
+  - key: personalPreferenceSatisfaction
+    prompt: How well did the way the page was framed match your own priorities and spending posture?
+    kind: enum
+    choices: ["yes", "partially", "no"]
+  - key: overallExperienceRating
+    prompt: Overall, how would you rate the landing page experience from 1 to 10?
+    kind: integer
+    minimum: 1
+    maximum: 10
+    explanation:
+      key: reason
+      prompt: Briefly explain the rating in your own voice.
+  - key: trustLevel
+    prompt: "Optional: how much did you trust this product based on the page, from 1 to 10?"
+    kind: integer
+    minimum: 1
+    maximum: 10
+    required: false
+  - key: effortRating
+    prompt: "Optional: how effortful did it feel to decide from 1 to 10, where higher means more effort?"
+    kind: integer
+    minimum: 1
+    maximum: 10
+    required: false
+  - key: clarityOfNextStep
+    prompt: "Optional: after viewing the page, did the next step (signing up or not) feel clear?"
+    kind: boolean
+    required: false

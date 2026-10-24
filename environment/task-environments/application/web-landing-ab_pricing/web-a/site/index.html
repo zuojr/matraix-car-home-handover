@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>NimbusDesk — Get more done for less</title>
+  <style>
+    :root { --ink:#1a1a1a; --muted:#5c5c5c; --line:#e4e4e7; --brand:#2563eb; }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family: -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+           color:var(--ink); line-height:1.5; background:#fff; }
+    .wrap { max-width: 720px; margin: 0 auto; padding: 32px 20px 64px; }
+    header { display:flex; align-items:center; justify-content:space-between; }
+    .logo { font-weight:700; font-size:18px; }
+    .nav a { color:var(--muted); text-decoration:none; font-size:14px; margin-left:16px; }
+    h1 { font-size:34px; line-height:1.15; margin:28px 0 10px; }
+    .sub { color:var(--muted); font-size:17px; margin:0 0 20px; }
+    .cta { display:inline-block; background:var(--brand); color:#fff; text-decoration:none;
+           padding:12px 22px; border-radius:8px; font-weight:600; font-size:16px; }
+    .cta.secondary { background:#fff; color:var(--brand); border:1px solid var(--brand); margin-left:10px; }
+    .proof { color:var(--muted); font-size:14px; margin-top:12px; }
+    .plans { border:1px solid var(--line); border-radius:12px; margin-top:32px; overflow:hidden; }
+    .plan { display:flex; align-items:baseline; justify-content:space-between; padding:16px 18px; border-top:1px solid var(--line); }
+    .plan:first-child { border-top:none; }
+    .plan .name { font-weight:600; }
+    .plan .price { font-variant-numeric: tabular-nums; }
+    .plan .note { color:var(--muted); font-size:13px; }
+    footer { color:var(--muted); font-size:13px; margin-top:40px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="logo">NimbusDesk</div>
+      <nav class="nav">
+        <a href="/">Product</a>
+        <a href="/">Pricing</a>
+        <a href="/signup">Sign in</a>
+      </nav>
+    </header>
+
+    <h1>Get more done for less.</h1>
+    <p class="sub">One tidy workspace for notes, tasks, and docs. Cut the busywork
+      and keep your whole team on the same page — without paying for bloated tools
+      you won't use.</p>
+
+    <a class="cta" href="/signup">Get started free</a>
+    <a class="cta secondary" href="/signup">See how it works</a>
+    <p class="proof">No credit card required. Teams save an average of 5 hours a week.</p>
+
+    <div class="plans">
+      <div class="plan">
+        <div><div class="name">Free</div><div class="note">For individuals getting organized</div></div>
+        <div class="price">$0</div>
+      </div>
+      <div class="plan">
+        <div><div class="name">Pro</div><div class="note">For small teams that want more space and history</div></div>
+        <div class="price">$10<span class="note"> / user / mo</span></div>
+      </div>
+      <div class="plan">
+        <div><div class="name">Business</div><div class="note">Admin controls and advanced security</div></div>
+        <div class="price">$20<span class="note"> / user / mo</span></div>
+      </div>
+    </div>
+
+    <footer>NimbusDesk · Simple, affordable, no lock-in.</footer>
+  </div>
+</body>
+</html>

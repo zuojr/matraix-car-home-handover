@@ -1,0 +1,32 @@
+{
+  "schemaVersion": "1.0",
+  "appType": "survey",
+  "verifier": "survey_generic",
+  "outputArtifact": "survey_result.json",
+  "hypothesis": "On an in-app upgrade prompt, social-proof copy raises upgrade intent more than savings-framed or premium-framed copy, without increasing perceived pressure.",
+  "compareBy": "system",
+  "design": "ab_n",
+  "armAssignment": "shared",
+  "factors": [
+    {
+      "id": "context_variant",
+      "label": "Upgrade prompt copy",
+      "space": "system",
+      "source": "stimulus",
+      "description": "Which copy the persona sees on the upgrade prompt. Only the framing text changes; question ids stay identical across levels so arms stay comparable.",
+      "baseline": "social_proof",
+      "levels": [
+        { "id": "social_proof", "label": "Social proof", "value": "social_proof" },
+        { "id": "savings", "label": "Savings-framed", "value": "savings" },
+        { "id": "premium", "label": "Premium-framed", "value": "premium" }
+      ]
+    }
+  ],
+  "constants": [],
+  "signals": [],
+  "metricContract": {
+    "primary": ["upgrade_intent"],
+    "secondary": ["perceived_value", "preferred_plan"],
+    "guardrail": ["perceived_pressure"]
+  }
+}

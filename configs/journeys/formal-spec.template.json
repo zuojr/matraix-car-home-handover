@@ -1,0 +1,13 @@
+{
+  "approved": false,
+  "approval_note": "",
+  "method": "paired-source-percentile-bootstrap-bonferroni-v1",
+  "independent_unit": "source_persona",
+  "primary_comparisons": ["car:disclosure", "car:priority", "home:disclosure", "home:priority"],
+  "source_personas": {"car": 50, "home": 50},
+  "alpha": 0.05,
+  "bootstrap_replicates": 20000,
+  "seed": 20261029,
+  "looks": ["final"],
+  "missing": "planned-denominator-[0,1]"
+}

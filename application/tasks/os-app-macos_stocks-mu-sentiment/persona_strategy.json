@@ -1,0 +1,26 @@
+{
+  "schemaVersion": "1.0",
+  "sources": [],
+  "dimensionFilters": {
+    "risk_tolerance": [
+      "Risk-averse",
+      "Cautious",
+      "Balanced",
+      "Risk-tolerant",
+      "Risk-seeking"
+    ],
+    "decision_style": [
+      "Analytical",
+      "Intuitive",
+      "Deliberative"
+    ]
+  },
+  "sampling": {
+    "mode": "stratified",
+    "fields": [
+      "risk_tolerance"
+    ],
+    "allocation": "perCell",
+    "perCell": 4
+  }
+}

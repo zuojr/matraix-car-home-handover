@@ -1,0 +1,24 @@
+{
+  "schemaVersion": "1.0",
+  "sources": [],
+  "dimensionFilters": {
+    "company_size": [
+      "Solo / freelance",
+      "Startup (<50)",
+      "SMB (50-500)",
+      "Mid (500-5k)",
+      "Enterprise (5k+)"
+    ],
+    "economic_motivation": {
+      "Cost-sensitive": 0.5,
+      "Value-driven": 0.3,
+      "Premium-seeking": 0.2
+    }
+  },
+  "sampling": {
+    "mode": "stratified",
+    "fields": ["economic_motivation"],
+    "allocation": "proportional",
+    "sampleSize": 20
+  }
+}

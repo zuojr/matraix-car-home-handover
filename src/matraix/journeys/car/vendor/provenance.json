@@ -1,0 +1,8 @@
+{
+  "repository": "https://github.com/CAR-bench/car-bench",
+  "archive_sha256": "a5f00b123c5d7cbd18d3e99d8ff2b2a4510c3950356248315c9d3803d1714415",
+  "license": "MIT",
+  "revision": "54990894241f2c07e9b523928c2a29e9b693d313",
+  "dataset": "experiment-owned fixtures, no upstream benchmark dataset",
+  "source_scope": "car_bench, setup.py, LICENSE, README.md exported from pinned Git tree"
+}

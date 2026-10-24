@@ -1,0 +1,13 @@
+{
+  "id": "ndhs_ph_2022",
+  "source": {
+    "type": "official_survey_reference",
+    "url": "https://dhsprogram.com/data/",
+    "mirror": "https://microdata.worldbank.org/index.php/catalog/5846"
+  },
+  "dimensions_claimed": 13,
+  "format": "dhs_recode",
+  "license": "dhs-program-terms",
+  "gated": true,
+  "notes": "Philippines National Demographic and Health Survey 2022 (PSA + ICF), 35,470 households interviewed. Use the household member recode (PR) file: it covers every member of both sexes at all ages, whereas the women's (IR) file is women 15-49 only and cannot carry a population margin. Download under DHS terms with a free account stating a research purpose, then run persona/curation/existing_data/scripts/crosswalks/ndhs_ph.py via run_pipeline.py --observed-only. This is a sample, not a census: any derived target must be weighted with hv005 (v005 on IR/MR). DHS recode variable names are standardised across surveys, so the crosswalk is written against the standard variables, but confirm the country-specific items (v130 religion, v131 ethnicity) against the PH-2022 codebook. Do not scrape or redistribute the .DTA/.SAV."
+}

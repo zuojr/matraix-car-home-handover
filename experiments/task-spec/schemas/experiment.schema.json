@@ -1,0 +1,147 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://matraix.dev/experiments/experiment.schema.json",
+  "title": "ExperimentTaskSpace",
+  "description": "The factor space a single experiment task declares. Lives at the task root as experiment.json. A task without this file is a single-variant task. Default posture is behavioral: the task declares which factors can vary and which behavioral signals to extract; correctness ground truth (per-level expected) is optional.\n\nContract shape (explicit split):\n- compareBy: which SPACE is under test (the treatment). system = randomized experiment on the stimulus; persona = quasi-experiment contrasting a subject attribute (a classification/blocking factor that cannot be randomly assigned).\n- factors[]: the variables that VARY and expand into cells. Each carries its space.\n- constants[]: variables PINNED at a single value across every cell (reproducibility + injected as MATRIX_PARAM_*). A constant is a variable fixed to one level; it is NOT the cohort. The cohort (who receives the treatment) lives in persona_strategy.json, never here.\n- armAssignment (SUT only): how the sampled cohort is distributed across arms. shared = the same personas run every arm (within-subject; the requested size is per-arm; total trials = N × arms). split = the cohort is partitioned across arms, each persona runs one arm (between-subject; the requested size is the total; ~N/arms per arm). Default shared. Ignored for compareBy=persona, which is always split by nature (a subject cannot be two attribute values at once). Whether analysis pairs by persona follows directly: shared cohorts pair, split cohorts do not.",
+  "type": "object",
+  "required": ["schemaVersion", "appType", "verifier", "compareBy", "design", "factors"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "appType": {
+      "type": "string",
+      "enum": ["web", "os-app", "chatbot", "survey"]
+    },
+    "verifier": {
+      "type": "string",
+      "description": "A built-in generic verifier id under task-spec/verifiers (web_generic, osapp_generic, chatbot_generic, survey_generic) OR the literal \"custom\" when the task supplies its own verifier in tests/. The only hard rule is that every level must emit the same facet keys so arms stay comparable.",
+      "minLength": 1
+    },
+    "outputArtifact": {
+      "type": "string",
+      "description": "Filename (under the trial output dir) the agent is expected to produce and that signals are read from. Presence of this file is the default task_outcome check."
+    },
+    "hypothesis": {
+      "type": "string",
+      "description": "The falsifiable hypothesis this experiment task tests, stated in one or two sentences. Displayed read-only in the workbench."
+    },
+    "compareBy": {
+      "type": "string",
+      "enum": ["system", "persona"],
+      "description": "Which space is the treatment. system (SUT): arms vary the environment/stimulus while one shared cohort is held. persona (PUT): the environment is pinned in constants[] and arms contrast on a persona attribute. Intrinsic to the task; the workbench does not let the operator flip it."
+    },
+    "design": {
+      "type": "string",
+      "enum": ["ab_n", "full_factorial", "fractional"],
+      "description": "ab_n (OFAT: baseline vs each other level), full_factorial (all combinations), or fractional (2-level orthogonal array; falls back to full when no array fits)."
+    },
+    "armAssignment": {
+      "type": "string",
+      "enum": ["shared", "split"],
+      "default": "shared",
+      "description": "SUT only: how the sampled cohort is distributed across arms. shared = same personas run every arm (within-subject; requested size is per-arm; total trials = N × arms). split = cohort partitioned across arms, each persona runs one arm (between-subject; requested size is the total; ~N/arms per arm). Prefer shared unless the arm count makes N × arms too expensive. Ignored for compareBy=persona (always split)."
+    },
+    "selectedFactors": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Optional subset/ordering of factor ids that participate in the design. Omit to use all declared factors."
+    },
+    "submissionSchema": {
+      "type": "string",
+      "description": "Optional correctness mode. Only consulted when a level supplies expected ground truth; behavioral tasks omit it.",
+      "enum": ["compare_choose", "fill_submit", "search_select", "transcript", "survey_response", "none"]
+    },
+    "signals": {
+      "type": "array",
+      "description": "Declarative Tier-2 behavioral extraction. Each entry lifts a field out of the output artifact into a shared-core facet. Keys MUST be identical across all levels.",
+      "items": { "$ref": "#/definitions/signal" }
+    },
+    "metricContract": {
+      "type": "object",
+      "description": "Which emitted facet keys the experiment analysis treats in each role. primary = OEC (drives ship/no-ship), secondary = diagnostic, guardrail = must-not-regress.",
+      "additionalProperties": false,
+      "properties": {
+        "primary": { "type": "array", "items": { "type": "string" } },
+        "secondary": { "type": "array", "items": { "type": "string" } },
+        "guardrail": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "factors": {
+      "type": "array",
+      "minItems": 1,
+      "description": "Variables that vary and expand into cells. Typically all share compareBy's space; for compareBy=persona this holds the single persona-attribute contrast factor.",
+      "items": { "$ref": "factor.schema.json" }
+    },
+    "constants": {
+      "type": "array",
+      "description": "Variables pinned to a single value across every cell (the held, non-treatment side). SUT usually leaves this empty (the environment IS the varying stimulus); PUT pins the environment here. Each constant is injected as MATRIX_PARAM_<ID>. Never the cohort.",
+      "items": { "$ref": "#/definitions/constant" }
+    }
+  },
+  "definitions": {
+    "constant": {
+      "type": "object",
+      "required": ["id", "value"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]{0,63}$",
+          "description": "Stable id, snake_case. Injected as MATRIX_PARAM_<ID>."
+        },
+        "label": { "type": "string" },
+        "space": {
+          "type": "string",
+          "enum": ["system", "persona"],
+          "default": "system",
+          "description": "Which space this pinned variable belongs to (usually system)."
+        },
+        "value": {
+          "type": ["string", "number", "boolean"],
+          "description": "The single pinned value."
+        }
+      }
+    },
+    "signal": {
+      "type": "object",
+      "required": ["path", "key", "kind"],
+      "additionalProperties": false,
+      "properties": {
+        "source": {
+          "type": "string",
+          "description": "Artifact filename under the output dir. Defaults to the task-level outputArtifact."
+        },
+        "path": {
+          "type": "string",
+          "description": "Dotted path into the source JSON (e.g. basis_primary or decision.subject.id)."
+        },
+        "reduce": {
+          "type": "string",
+          "enum": ["none", "count"],
+          "default": "none",
+          "description": "count: emit the length of a list/string value instead of the value itself."
+        },
+        "key": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]{0,63}$",
+          "description": "Facet key emitted into the shared-core envelope; must be identical across all levels."
+        },
+        "label": { "type": "string" },
+        "kind": {
+          "type": "string",
+          "enum": ["numerical", "categorical", "textual"]
+        },
+        "role": {
+          "type": "string",
+          "enum": ["primary", "score", "evidence", "explanation"],
+          "default": "score"
+        },
+        "context": {
+          "type": "string",
+          "default": "signals",
+          "description": "contextType these facets aggregate under (e.g. decision, decision_process)."
+        }
+      }
+    }
+  }
+}

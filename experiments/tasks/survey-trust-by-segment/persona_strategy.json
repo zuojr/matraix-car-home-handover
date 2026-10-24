@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "1.0",
+  "sources": [],
+  "dimensionFilters": {
+    "age_bracket": ["25-34", "35-44"],
+    "region": ["North America", "Western Europe"],
+    "tech_savviness": ["Digital native", "Comfortable", "Cautious adopter"],
+    "economic_motivation": [
+      "Cost-sensitive",
+      "Value-driven",
+      "Premium-seeking",
+      "Indifferent"
+    ]
+  },
+  "sampling": {
+    "mode": "random",
+    "sampleSize": 24
+  }
+}

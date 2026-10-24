@@ -1,0 +1,23 @@
+{
+  "sut": {
+    "base_url": "https://replace-with-your-provider.invalid/v1",
+    "model": "REPLACE_WITH_SUT_MODEL_ID",
+    "timeout": 180,
+    "max_tokens": 16384,
+    "options": {}
+  },
+  "put": {
+    "base_url": "https://replace-with-your-provider.invalid/v1",
+    "model": "REPLACE_WITH_PUT_MODEL_ID",
+    "timeout": 180,
+    "max_tokens": 512,
+    "options": {"response_format": {"type": "json_object"}}
+  },
+  "limits": {
+    "max_sut_calls_per_case": 160,
+    "max_persona_turns": 64,
+    "max_total_api_requests": 2000,
+    "chat_timeout": 1200
+  },
+  "concurrency": 2
+}

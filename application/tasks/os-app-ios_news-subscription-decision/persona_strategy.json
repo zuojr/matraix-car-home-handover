@@ -1,0 +1,24 @@
+{
+  "schemaVersion": "1.0",
+  "sources": [],
+  "dimensionFilters": {
+    "media_diet": [
+      "News",
+      "Long-form"
+    ],
+    "economic_motivation": [
+      "Premium-seeking",
+      "Value-driven",
+      "Cost-sensitive"
+    ]
+  },
+  "sampling": {
+    "mode": "stratified",
+    "fields": [
+      "economic_motivation",
+      "media_diet"
+    ],
+    "allocation": "perCell",
+    "perCell": 4
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "1.0",
+  "appType": "web",
+  "verifier": "web_generic",
+  "outputArtifact": "signup_decision.json",
+  "hypothesis": "For the identical product and pricing, a premium/outcome-framed landing page with a highlighted recommended plan lifts signup conversion over a value/savings-framed compact page — and the lift is uneven across personas (premium-seeking users convert more on the premium framing; cost-sensitive users are unmoved or convert more on the value framing).",
+  "compareBy": "system",
+  "design": "ab_n",
+  "armAssignment": "shared",
+  "factors": [
+    {
+      "id": "target_url",
+      "label": "Landing page design",
+      "space": "system",
+      "source": "stimulus",
+      "description": "Which self-hosted landing page the persona lands on. Same product and prices in both; only copy framing and layout change. The signup CTA is identical in destination (/signup); conversion is the persona clicking through to it.",
+      "baseline": "variant_a",
+      "levels": [
+        { "id": "variant_a", "label": "Variant A - value framing", "value": "http://web-a" },
+        { "id": "variant_b", "label": "Variant B - premium framing", "value": "http://web-b" }
+      ]
+    }
+  ],
+  "constants": [],
+  "signals": [
+    { "path": "action_taken", "key": "signup_clicked", "label": "Signup action", "kind": "categorical", "role": "primary", "context": "decision" },
+    { "path": "decision_basis", "key": "decision_basis", "label": "Decision basis", "kind": "categorical", "role": "score", "context": "decision" },
+    { "path": "decision_reason", "key": "decision_reason", "label": "Decision reason", "kind": "textual", "role": "explanation", "context": "decision" },
+    { "path": "exploration_style", "key": "exploration_style", "label": "Exploration style", "kind": "categorical", "role": "score", "context": "decision_process" }
+  ],
+  "metricContract": {
+    "primary": ["signup_clicked"],
+    "secondary": ["decision_basis", "overall_experience_rating"],
+    "guardrail": ["effort_rating", "trust_level"]
+  }
+}

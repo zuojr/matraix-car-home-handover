@@ -1,0 +1,12 @@
+artifactName: user_feedback.json
+instructions: Report your experience honestly. This is secondary feedback, not proof
+  of task success.
+fields:
+- key: wouldStillContinueUse
+  prompt: Would you keep using this assistant?
+  kind: boolean
+- key: overallExperienceRating
+  prompt: Rate the experience from 1 to 10.
+  kind: integer
+  minimum: 1
+  maximum: 10

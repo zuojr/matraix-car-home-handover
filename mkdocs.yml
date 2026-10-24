@@ -1,0 +1,57 @@
+site_name: MatrAIx in the Wild
+site_description: >-
+  Persona cohorts in product environments as repeatable measurements.
+repo_url: https://github.com/MatrAIx-ai/MatrAIx_in_the_Wild
+docs_dir: docs
+
+theme:
+  name: material
+  features:
+    - navigation.sections
+    - navigation.top
+    - navigation.indexes
+    - search.highlight
+    - content.code.copy
+    - toc.follow
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+
+markdown_extensions:
+  - admonition
+  - toc:
+      permalink: true
+  - pymdownx.superfences
+  - pymdownx.highlight
+  - tables
+
+nav:
+  - Home: README.md
+  - Experiments: application/experiment-task-guide.md
+  - Run:
+      - Quickstart: quickstart.md
+      - Configuration: configuration.md
+  - Persona:
+      - Overview: persona/README.md
+      - Pipeline: persona/pipeline.md
+      - Validation: persona/validation.md
+  - Application:
+      - Overview: application/README.md
+      - Task guide: application/task-guide.md
+      - Experiment task guide: application/experiment-task-guide.md
+      - Playground API: application/playground-api.md
+  - Environment:
+      - Overview: environment/README.md
+      - Agents: environment/agents.md
+      - Web interaction: environment/web-interaction.md
+      - Runtime: environment/runtime.md
+      - Large-scale runs: environment/large-scale-runs.md
+  - Packages: packages.md

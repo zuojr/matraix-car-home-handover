@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "1.0",
+  "sources": [],
+  "dimensionFilters": {
+    "tech_savviness": [
+      "Digital native",
+      "Comfortable"
+    ],
+    "domain": [
+      "Software & AI",
+      "Engineering",
+      "Skilled Trades",
+      "Natural Sciences",
+      "Education"
+    ]
+  },
+  "sampling": {
+    "mode": "random",
+    "sampleSize": 4
+  }
+}

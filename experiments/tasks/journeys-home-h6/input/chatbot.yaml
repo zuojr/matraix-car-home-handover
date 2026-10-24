@@ -1,0 +1,28 @@
+transport: sidecar_http
+runtimeDefaults:
+  applicationId: journeys
+  applicationContext: home-6-main-C1
+  domain: home
+capabilities:
+- text_chat
+connection:
+  baseUrl: http://assistant:8000
+  healthPath: /health
+protocol:
+  sendMessage:
+    method: POST
+    path: /v1/messages
+    sessionIdField: sessionId
+    messageField: message
+    titleField: ''
+    botTypeField: ''
+    staticBody:
+      applicationContext: home-6-main-C1
+  response:
+    sessionIdField: sessionId
+    replyField: reply
+    turnField: turn
+artifacts:
+  transcript: transcript.json
+  applicationResult: application_result.json
+  feedback: user_feedback.json
